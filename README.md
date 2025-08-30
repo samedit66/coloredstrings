@@ -76,9 +76,9 @@ perror("file not found!")
 
 ## API (high level)
 
-- patch() — attach methods to `str`
-- unpatch() — remove the attached methods
-- patched() - automatically calls `patch()` and `unpatch()` in a given context
+- `patch()` — attach methods to `str`
+- `unpatch()` — remove the attached methods
+- `patched()` - automatically calls `patch()` and `unpatch()` in a given context
 
 - Color/style methods attached to str (call on any string):
     - Foreground colors: `red()`, `green()`, `yellow()`, `blue()`, `magenta()`, `cyan()`, `white()`, `black()`, `bright_red()`
