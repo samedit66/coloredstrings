@@ -76,7 +76,7 @@ def log_info(message: str):
 
 ## API (high level)
 
-- patch() — attach methods to str
+- patch() — attach methods to `str`
 - unpatch() — remove the attached methods
 - patched() - automatically calls `patch()` and `unpatch()` in a given context
 
