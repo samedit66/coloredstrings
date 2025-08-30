@@ -1,4 +1,5 @@
 import contextlib
+import functools
 
 
 try:
@@ -157,7 +158,6 @@ def unpatch():
         ff.reverse(str, name)
 
 
-@contextlib.contextmanager
 def patched(func=None):
     """Attach all color/format methods to built-in `str` but in 
     a limited scoped defined by either a context manager or a function.
@@ -175,15 +175,21 @@ def patched(func=None):
     ```
     """
     if func is None:
-        patch()
-        yield
-        unpatch()
-        return
+        @contextlib.contextmanager
+        def _cm():
+            patch()
+            try:
+                yield
+            finally:
+                unpatch()
+        return _cm()
 
+    @functools.wraps(func)
     def wrapper(*args, **kwargs):
         patch()
-        result = func(*args, **kwargs)
-        unpatch()
-        return result
+        try:
+            return func(*args, **kwargs)
+        finally:
+            unpatch()
 
     return wrapper

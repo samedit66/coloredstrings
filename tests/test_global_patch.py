@@ -2,8 +2,7 @@ import pytest
 
 import coloredstrings
 
-
-RESET = "\033[0m"
+import ascii_codes
 
 
 @pytest.fixture(autouse=True)
@@ -17,7 +16,7 @@ def strip_known_codes(s: str, *codes: str) -> str:
     """Helper to remove known ANSI codes for simple content-checking."""
     for c in codes:
         s = s.replace(c, "")
-    return s.replace(RESET, "")
+    return s.replace(ascii_codes.RESET, "")
 
 
 def test_basic_red_and_reset_and_content():
@@ -26,7 +25,7 @@ def test_basic_red_and_reset_and_content():
     assert isinstance(r, str)
     # red code must be present and string must end with reset
     assert "\033[31m" in r
-    assert r.endswith(RESET)
+    assert r.endswith(ascii_codes.RESET)
     # after removing known codes we recover original content
     assert strip_known_codes(r, "\033[31m") == s
 
