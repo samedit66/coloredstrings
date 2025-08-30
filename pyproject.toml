@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "samedit66", email = "samedit66@yandex.ru" }
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.9"
 dependencies = [
     "forbiddenfruit>=0.1.4",
 ]
