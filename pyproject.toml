@@ -1,0 +1,22 @@
+[project]
+name = "coloredstrings"
+version = "0.1.0"
+description = "Colorize Different."
+readme = "README.md"
+authors = [
+    { name = "samedit66", email = "samedit66@yandex.ru" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "forbiddenfruit>=0.1.4",
+]
+
+[build-system]
+requires = ["uv_build>=0.8.0,<0.9"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.1",
+    "ruff>=0.12.11",
+]
