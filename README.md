@@ -91,11 +91,15 @@ perror("file not found!")
 
 ## Installation
 
+Stable:
+```bash
+pip install coloredstrings
+```
+
+Latest:
 ```bash
 pip install git+https://github.com/samedit66/coloredstrings.git
 ```
-
-I'll soon upload it to PyPi🙃.
 
 ---
 
