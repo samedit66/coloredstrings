@@ -58,8 +58,6 @@ coloredstrings.unpatch()
 To patch locally (inside a function or a context):
 
 ```python
-import sys
-
 import coloredstrings
 
 def perror(message: str):
@@ -70,8 +68,10 @@ def perror(message: str):
 def log_info(message: str):
     colored = "INFO".blue()
     print(f"[{colored}]: {message}")
-```
 
+log_info("Downloaded image.")
+perror("file not found!")
+```
 ---
 
 ## API (high level)
