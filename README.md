@@ -1,4 +1,4 @@
-# coloredstrings
+# coloredstrings [![Python package](https://github.com/samedit66/coloredstrings/actions/workflows/python-package.yml/badge.svg)](https://github.com/samedit66/coloredstrings/actions/workflows/python-package.yml)
 
 **Colorize Different**
 
