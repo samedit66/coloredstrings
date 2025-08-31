@@ -29,6 +29,9 @@ classifiers = [
     "Topic :: Terminals",
     "Topic :: Software Development :: Libraries",
 ]
+dependencies = [
+    "forbiddenfruit>=0.1.4",
+]
 
 [project.urls]
 "Homepage" = "https://github.com/samedit66/coloredstrings"
