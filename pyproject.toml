@@ -1,15 +1,41 @@
 [project]
 name = "coloredstrings"
-version = "0.1.0"
+version = "0.1.4b1"
 description = "Colorize Different."
 readme = "README.md"
 authors = [
     { name = "samedit66", email = "samedit66@yandex.ru" }
 ]
-requires-python = ">=3.9"
-dependencies = [
-    "forbiddenfruit>=0.1.4",
+maintainers = [
+    { name = "samedit66", email = "samedit66@yandex.ru" }
 ]
+license-files = ["LICEN[CS]E*"]
+keywords = ["ansi", "color", "colour", "crossplatform", "terminal", "text"]
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Terminals",
+    "Topic :: Software Development :: Libraries",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/samedit66/coloredstrings"
+"Repository" = "https://github.com/samedit66/coloredstrings"
+"Bug Tracker" = "https://github.com/samedit66/coloredstrings/issues"
+"Documentation" = "https://github.com/samedit66/coloredstrings#readme"
+"Changelog" = "https://github.com/samedit66/coloredstrings/releases"
 
 [build-system]
 requires = ["uv_build>=0.8.0,<0.9"]
