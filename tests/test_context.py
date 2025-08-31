@@ -1,5 +1,3 @@
-import pytest
-
 import coloredstrings
 
 import ascii_codes
