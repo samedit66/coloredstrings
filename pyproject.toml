@@ -1,6 +1,6 @@
 [project]
 name = "coloredstrings"
-version = "0.1.4b1"
+version = "0.1.4"
 description = "Colorize Different."
 readme = "README.md"
 authors = [

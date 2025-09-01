@@ -13,8 +13,11 @@ wheels = [
 
 [[package]]
 name = "coloredstrings"
-version = "0.1.4b1"
+version = "0.1.4"
 source = { editable = "." }
+dependencies = [
+    { name = "forbiddenfruit" },
+]
 
 [package.dev-dependencies]
 dev = [
@@ -23,6 +26,7 @@ dev = [
 ]
 
 [package.metadata]
+requires-dist = [{ name = "forbiddenfruit", specifier = ">=0.1.4" }]
 
 [package.metadata.requires-dev]
 dev = [
@@ -41,6 +45,12 @@ sdist = { url = "https://files.pythonhosted.org/packages/0b/9f/a65090624ecf468cd
 wheels = [
     { url = "https://files.pythonhosted.org/packages/36/f4/c6e662dade71f56cd2f3735141b265c3c79293c109549c1e6933b0651ffc/exceptiongroup-1.3.0-py3-none-any.whl", hash = "sha256:4d111e6e0c13d0644cad6ddaa7ed0261a0b36971f6d23e7ec9b4b9097da78a10", size = 16674, upload-time = "2025-05-10T17:42:49.33Z" },
 ]
+
+[[package]]
+name = "forbiddenfruit"
+version = "0.1.4"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/e6/79/d4f20e91327c98096d605646bdc6a5ffedae820f38d378d3515c42ec5e60/forbiddenfruit-0.1.4.tar.gz", hash = "sha256:e3f7e66561a29ae129aac139a85d610dbf3dd896128187ed5454b6421f624253", size = 43756, upload-time = "2021-01-16T21:03:35.401Z" }
 
 [[package]]
 name = "iniconfig"
