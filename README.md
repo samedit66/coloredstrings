@@ -11,8 +11,8 @@ A tiny utility that patches Python's built-in str with convenient ANSI color / s
 Patching builtins is a controversial choice, and at first glance it __may__ look un-Pythonic. Libraries like `colorama` require you to import constants and build strings by concatenation:
 
 ```python
-# colorama style (typical)
 from colorama import Fore, Style
+
 print(Fore.RED + "error: " + Style.RESET_ALL + "something went wrong")
 ```
 
