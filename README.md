@@ -18,6 +18,15 @@ print(Fore.RED + "error: " + Style.RESET_ALL + "something went wrong")
 
 That works fine, but it forces you to manage constants and remember to reset, and your code quickly becomes noisy with `+` and `RESET` tokens.
 
+Another example using the `termcolor` package:
+```python
+from termcolor import cprint
+
+print(colored("error:", "red"), "something went wrong")
+```
+
+`termcolor` offers a nice function `colored` with a bunch of arguments, but personally, I still find it lacking.
+
 With `coloredstrings` the color becomes a readable method on the string itself:
 
 ```python
