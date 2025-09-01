@@ -11,20 +11,30 @@ A tiny utility that patches Python's built-in str with convenient ANSI color / s
 Patching builtins is a controversial choice, and at first glance it __may__ look un-Pythonic. Libraries like `colorama` require you to import constants and build strings by concatenation:
 
 ```python
-# colorama style (typical)
 from colorama import Fore, Style
+
 print(Fore.RED + "error: " + Style.RESET_ALL + "something went wrong")
 ```
 
 That works fine, but it forces you to manage constants and remember to reset, and your code quickly becomes noisy with `+` and `RESET` tokens.
 
+Another example using the `termcolor` package:
+```python
+from termcolor import cprint
+
+print(colored("error:", "red"), "something went wrong")
+```
+
+`termcolor` offers a nice function `colored` with a bunch of arguments, but personally, I still find it lacking.
+
 With `coloredstrings` the color becomes a readable method on the string itself:
 
 ```python
 import coloredstrings
-coloredstrings.patch()
-print("error:".red(), "something went wrong")
-coloredstrings.unpatch()
+
+# `patched()` patches `str` to have awesome `red()` method
+with coloredstrings.patched():
+    print("error: ".red(), "something went wrong")
 ```
 
 This reads more like natural prose and keeps color usage local to the value being displayed.
@@ -33,16 +43,24 @@ This reads more like natural prose and keeps color usage local to the value bein
 
 ## Quick start — example usage
 
-To patch globally:
-
 ```python
 import coloredstrings
 
-# Attach helpers to built-in str
+# Patched `str` methods are available only within the context
+def warn(msg: str) -> None:
+    with coloredstrings.patched():
+        print("warning:".yellow().bold(), msg)
+
+# Same idea, but using a decorator
+@coloredstrings.patched
+def info(msg: str) -> None:
+    print("[info]:".blue(), msg)
+
+# If you're brave enough and really want it, you can patch `str` globally
 coloredstrings.patch()
 
-print("ok".green())                # green text
-print("warn".yellow().bold())      # chained styles (color then bold)
+print("ok".green())
+print("warn".yellow().bold())
 print("bad".red(), "on green".on_green())
 
 # 24-bit RGB:
@@ -51,27 +69,10 @@ print("custom".rgb(123, 45, 200))
 # 256-color:
 print("teal-ish".color256(37))
 
-# When you're done (optional) remove the patched methods:
+# And don’t forget to unpatch it afterwards
 coloredstrings.unpatch()
 ```
 
-To patch locally (inside a function or a context):
-
-```python
-import coloredstrings
-
-def perror(message: str):
-    with coloredstrings.patched():
-        print(message.red())
-
-@coloredstrings.patched
-def log_info(message: str):
-    colored = "INFO".blue()
-    print(f"[{colored}]: {message}")
-
-log_info("Downloaded image.")
-perror("file not found!")
-```
 ---
 
 ## API (high level)
