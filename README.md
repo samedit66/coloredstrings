@@ -31,9 +31,10 @@ With `coloredstrings` the color becomes a readable method on the string itself:
 
 ```python
 import coloredstrings
-coloredstrings.patch()
-print("error:".red(), "something went wrong")
-coloredstrings.unpatch()
+
+# `patched()` patches `str` to have awesome `red()` method
+with coloredstrings.patched():
+    print("error: ".red(), "something went wrong")
 ```
 
 This reads more like natural prose and keeps color usage local to the value being displayed.
