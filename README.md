@@ -43,16 +43,24 @@ This reads more like natural prose and keeps color usage local to the value bein
 
 ## Quick start — example usage
 
-To patch globally:
-
 ```python
 import coloredstrings
 
-# Attach helpers to built-in str
+# Patched `str` methods are available only within the context
+def warn(msg: str) -> None:
+    with coloredstrings.patched():
+        print("warning:".yellow().bold(), msg)
+
+# Same idea, but using a decorator
+@coloredstrings.patched
+def info(msg: str) -> None:
+    print("[info]:".blue(), msg)
+
+# If you're brave enough and really want it, you can patch `str` globally
 coloredstrings.patch()
 
-print("ok".green())                # green text
-print("warn".yellow().bold())      # chained styles (color then bold)
+print("ok".green())
+print("warn".yellow().bold())
 print("bad".red(), "on green".on_green())
 
 # 24-bit RGB:
@@ -61,27 +69,10 @@ print("custom".rgb(123, 45, 200))
 # 256-color:
 print("teal-ish".color256(37))
 
-# When you're done (optional) remove the patched methods:
+# And don’t forget to unpatch it afterwards
 coloredstrings.unpatch()
 ```
 
-To patch locally (inside a function or a context):
-
-```python
-import coloredstrings
-
-def perror(message: str):
-    with coloredstrings.patched():
-        print(message.red())
-
-@coloredstrings.patched
-def log_info(message: str):
-    colored = "INFO".blue()
-    print(f"[{colored}]: {message}")
-
-log_info("Downloaded image.")
-perror("file not found!")
-```
 ---
 
 ## API (high level)
