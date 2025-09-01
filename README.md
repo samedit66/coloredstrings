@@ -69,7 +69,7 @@ print("custom".rgb(123, 45, 200))
 # 256-color:
 print("teal-ish".color256(37))
 
-# And don’t forget to unpatch it afterwards
+# And don't forget to unpatch it afterwards
 coloredstrings.unpatch()
 ```
 
