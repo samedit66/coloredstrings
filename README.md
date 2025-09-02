@@ -1,8 +1,24 @@
-# coloredstrings [![Python package](https://github.com/samedit66/coloredstrings/actions/workflows/python-package.yml/badge.svg)](https://github.com/samedit66/coloredstrings/actions/workflows/python-package.yml) [![PyPI Downloads](https://static.pepy.tech/personalized-badge/coloredstrings?period=total&units=ABBREVIATION&left_color=BLACK&right_color=MAGENTA&left_text=downloads)](https://pepy.tech/projects/coloredstrings)
+# coloredstrings
+
+[![Python package](https://github.com/samedit66/coloredstrings/actions/workflows/python-package.yml/badge.svg)](https://github.com/samedit66/coloredstrings/actions/workflows/python-package.yml) [![PyPI Downloads](https://static.pepy.tech/personalized-badge/coloredstrings?period=total&units=ABBREVIATION&left_color=BLACK&right_color=MAGENTA&left_text=downloads)](https://pepy.tech/projects/coloredstrings)
 
 **Colorize Different**
 
 A tiny utility that patches Python's built-in str with convenient ANSI color / style helpers so you can write `"hello".red()` instead of juggling escape sequences or long constant concatenations. Inspired by the Rust [text-colorizer](https://crates.io/crates/text-colorizer) crate — ergonomic, expressive, and surprisingly pleasant to type.
+
+---
+
+## Installation
+
+Stable:
+```bash
+pip install coloredstrings
+```
+
+Latest:
+```bash
+pip install git+https://github.com/samedit66/coloredstrings.git
+```
 
 ---
 
@@ -87,20 +103,6 @@ coloredstrings.unpatch()
     - Background helpers: `on_red()`, `on_green()`, `on_rgb(r, g, b)`
     - 24-bit color: `rgb(r, g, b)`
     - 256-color: `color256(idx)`
-
----
-
-## Installation
-
-Stable:
-```bash
-pip install coloredstrings
-```
-
-Latest:
-```bash
-pip install git+https://github.com/samedit66/coloredstrings.git
-```
 
 ---
 
