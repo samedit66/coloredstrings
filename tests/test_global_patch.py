@@ -86,4 +86,3 @@ def test_chaining_order_and_reset_behavior():
     assert "\033[1m" in res
     # and the content is still present after stripping known codes
     assert strip_known_codes(res, "\033[31m", "\033[1m") == s
-    

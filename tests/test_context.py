@@ -38,7 +38,9 @@ def test_multiple_methods_chain():
     with coloredstrings.patched():
         text = "hi".red().bold().underline()
         # order of application matters, should start with last code added
-        assert text.startswith("\033[4m\033[1m\033[31mhi") or text.startswith("\033[31m")  
+        assert text.startswith("\033[4m\033[1m\033[31mhi") or text.startswith(
+            "\033[31m"
+        )
         assert text.endswith("\033[0m")
 
 
