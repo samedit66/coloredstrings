@@ -20,7 +20,7 @@ That works fine, but it forces you to manage constants and remember to reset, an
 
 Another example using the `termcolor` package:
 ```python
-from termcolor import cprint
+from termcolor import colored
 
 print(colored("error:", "red"), "something went wrong")
 ```
@@ -34,7 +34,7 @@ import coloredstrings
 
 # `patched()` patches `str` to have awesome `red()` method
 with coloredstrings.patched():
-    print("error: ".red(), "something went wrong")
+    print("error:".red(), "something went wrong")
 ```
 
 This reads more like natural prose and keeps color usage local to the value being displayed.
@@ -84,7 +84,7 @@ coloredstrings.unpatch()
 - Color/style methods attached to str (call on any string):
     - Foreground colors: `red()`, `green()`, `yellow()`, `blue()`, `magenta()`, `cyan()`, `white()`, `black()`, `bright_red()`
     - Styles: `bold()`, `dim()`, `italic()`, `underline()`, `inverse()`
-    - Background helpers: `on_red()`, `on_green()`
+    - Background helpers: `on_red()`, `on_green()`, `on_rgb(r, g, b)`
     - 24-bit color: `rgb(r, g, b)`
     - 256-color: `color256(idx)`
 
