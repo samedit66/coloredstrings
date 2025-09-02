@@ -125,9 +125,9 @@ def on_rgb(self, r: int, g: int, b: int):
 def rgb(self, r: int, g: int, b: int):
     """Apply an RGB 24-bit foreground color to the string. Example: 'hi'.rgb(255,0,0)"""
     # clamp values
-    r = max(0, min(255, int(r)))
-    g = max(0, min(255, int(g)))
-    b = max(0, min(255, int(b)))
+    r = _clamp(r, 0, 255)
+    g = _clamp(g, 0, 255)
+    b = _clamp(b, 0, 255)
     code = f"\033[38;2;{r};{g};{b}m"
     return _wrap(code, self)
 
