@@ -26,23 +26,21 @@ version = "1.0.0"
 source = { editable = "." }
 dependencies = [
     { name = "forbiddenfruit" },
-    { name = "pre-commit" },
 ]
 
 [package.dev-dependencies]
 dev = [
+    { name = "pre-commit" },
     { name = "pytest" },
     { name = "ruff" },
 ]
 
 [package.metadata]
-requires-dist = [
-    { name = "forbiddenfruit", specifier = ">=0.1.4" },
-    { name = "pre-commit", specifier = ">=4.3.0" },
-]
+requires-dist = [{ name = "forbiddenfruit", specifier = ">=0.1.4" }]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "pre-commit", specifier = ">=4.3.0" },
     { name = "pytest", specifier = ">=8.4.1" },
     { name = "ruff", specifier = ">=0.12.11" },
 ]

@@ -31,7 +31,6 @@ classifiers = [
 ]
 dependencies = [
     "forbiddenfruit>=0.1.4",
-    "pre-commit>=4.3.0",
 ]
 
 [project.urls]
@@ -47,6 +46,7 @@ build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
+    "pre-commit>=4.3.0",
     "pytest>=8.4.1",
     "ruff>=0.12.11",
 ]
