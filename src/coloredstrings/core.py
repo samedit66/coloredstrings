@@ -174,9 +174,9 @@ def unpatch():
 
 
 def patched(func=None):
-    """Attach all color/format methods to built-in `str` but in 
+    """Attach all color/format methods to built-in `str` but in
     a limited scoped defined by either a context manager or a function.
-    
+
     Examples:
     ```python
     import coloredstrings
@@ -190,6 +190,7 @@ def patched(func=None):
     ```
     """
     if func is None:
+
         @contextlib.contextmanager
         def _cm():
             patch()
@@ -197,6 +198,7 @@ def patched(func=None):
                 yield
             finally:
                 unpatch()
+
         return _cm()
 
     @functools.wraps(func)
