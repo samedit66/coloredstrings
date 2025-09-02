@@ -108,6 +108,20 @@ def on_green(self):
     return _wrap("\033[42m", self)
 
 
+def _clamp(value: int, min_value: int, max_value: int) -> int:
+    return max(min_value, min(max_value, int(value)))
+
+
+def on_rgb(self, r: int, g: int, b: int):
+    """Apply an RGB 24-bit background color to the string. Example: 'hi'.on_rgb(255,0,0)"""
+    # clamp values
+    r = _clamp(r, 0, 255)
+    g = _clamp(g, 0, 255)
+    b = _clamp(b, 0, 255)
+    code = f"\033[48;2;{r};{g};{b}m"
+    return _wrap(code, self)
+
+
 def rgb(self, r: int, g: int, b: int):
     """Apply an RGB 24-bit foreground color to the string. Example: 'hi'.rgb(255,0,0)"""
     # clamp values
@@ -142,6 +156,7 @@ _METHODS = {
     "on_red": on_red,
     "on_green": on_green,
     "rgb": rgb,
+    "on_rgb": on_rgb,
     "color256": color256,
 }
 
