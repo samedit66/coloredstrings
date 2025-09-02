@@ -174,19 +174,21 @@ def unpatch():
 
 
 def patched(func=None):
-    """Attach all color/format methods to built-in `str` but in
-    a limited scoped defined by either a context manager or a function.
+    """Attach all color/format methods to built-in `str` in a limited scope.
 
     Examples:
     ```python
     import coloredstrings
 
-    with coloredstrings.patched():
-        print("Error!".red())
+    # Patched `str` methods are available only within the context
+    def warn(msg: str) -> None:
+        with coloredstrings.patched():
+            print("warning:".yellow().bold(), msg)
 
+    # Same idea, but using a decorator
     @coloredstrings.patched
-    def success():
-        print("Success".green())
+    def info(msg: str) -> None:
+        print("[info]:".blue(), msg)
     ```
     """
     if func is None:
