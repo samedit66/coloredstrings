@@ -133,7 +133,7 @@ def rgb(self, r: int, g: int, b: int):
 
 
 def color256(self, idx: int):
-    idx = max(0, min(255, int(idx)))
+    idx = _clamp(idx, 0, 255)
     code = f"\033[38;5;{idx}m"
     return _wrap(code, self)
 
