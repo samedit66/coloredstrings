@@ -61,7 +61,7 @@ coloredstrings.unpatch()
 
 ---
 
-## Why use this? — Isn't patching `str` un-Pythonic?
+## Why use this? -- Isn't patching `str` un-Pythonic?
 
 Patching builtins is a controversial choice, and at first glance it __may__ look un-Pythonic. Libraries like `colorama` require you to import constants and build strings by concatenation:
 
