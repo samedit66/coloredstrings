@@ -27,6 +27,40 @@ pip install git+https://github.com/samedit66/coloredstrings.git
 
 ---
 
+## Quick start
+
+```python
+import coloredstrings
+
+# Patched `str` methods are available only within the context
+def warn(msg: str) -> None:
+    with coloredstrings.patched():
+        print("warning:".yellow().bold(), msg)
+
+# Same idea, but using a decorator
+@coloredstrings.patched
+def info(msg: str) -> None:
+    print("[info]:".blue(), msg)
+
+# If you're brave enough and really want it, you can patch `str` globally
+coloredstrings.patch()
+
+print("ok".green())
+print("warn".yellow().bold())
+print("bad".red(), "on green".on_green())
+
+# 24-bit RGB:
+print("custom".rgb(123, 45, 200))
+
+# 256-color:
+print("teal-ish".color256(37))
+
+# And don't forget to unpatch it afterwards
+coloredstrings.unpatch()
+```
+
+---
+
 ## Why use this? — Isn't patching `str` un-Pythonic?
 
 Patching builtins is a controversial choice, and at first glance it __may__ look un-Pythonic. Libraries like `colorama` require you to import constants and build strings by concatenation:
@@ -62,52 +96,66 @@ This reads more like natural prose and keeps color usage local to the value bein
 
 ---
 
-## Quick start — example usage
+## API
 
-```python
-import coloredstrings
-
-# Patched `str` methods are available only within the context
-def warn(msg: str) -> None:
-    with coloredstrings.patched():
-        print("warning:".yellow().bold(), msg)
-
-# Same idea, but using a decorator
-@coloredstrings.patched
-def info(msg: str) -> None:
-    print("[info]:".blue(), msg)
-
-# If you're brave enough and really want it, you can patch `str` globally
-coloredstrings.patch()
-
-print("ok".green())
-print("warn".yellow().bold())
-print("bad".red(), "on green".on_green())
-
-# 24-bit RGB:
-print("custom".rgb(123, 45, 200))
-
-# 256-color:
-print("teal-ish".color256(37))
-
-# And don't forget to unpatch it afterwards
-coloredstrings.unpatch()
-```
-
----
-
-## API (high level)
-
+### Patch `str`
 - `patch()` — attach methods to `str`
 - `unpatch()` — remove the attached methods
 - `patched()` - automatically calls `patch()` and `unpatch()` in a given context
 
-- Color/style methods attached to str (call on any string):
-    - Foreground colors: `red()`, `green()`, `yellow()`, `blue()`, `magenta()`, `cyan()`, `white()`, `black()`, `bright_red()`
-    - Styles: `bold()`, `dim()`, `italic()`, `underline()`, `inverse()`
-    - Background helpers: `on_red()`, `on_green()`, `on_rgb(r, g, b)`
-    - 24-bit color: `rgb(r, g, b)`
-    - 256-color: `color256(idx)`
+### Foreground colors (basic & bright)
+
+- `black()` (aliases: `grey()` and `gray()`)
+- `red()`
+- `green()`
+- `yellow()`
+- `blue()`
+- `magenta()`
+- `cyan()`
+- `white()`
+- `bright_black()`
+- `bright_red()`
+- `bright_green()`
+- `bright_yellow()`
+- `bright_blue()`
+- `bright_magenta()`
+- `bright_cyan()`
+- `bright_white()`
+
+### Background helpers
+
+- `on_black()` (aliases: `on_grey()` and `on_gray()`)
+- `on_red()`
+- `on_green()`
+- `on_yellow()`
+- `on_blue()`
+- `on_magenta()`
+- `on_cyan()`
+- `on_white()`
+- `on_bright_black()` (aliases: `on_bright_grey()` and `on_bright_gray()`)
+- `on_bright_red()`
+- `on_bright_green()`
+- `on_bright_yellow()`
+- `on_bright_blue()`
+- `on_bright_magenta()`
+- `on_bright_cyan()`
+- `on_bright_white()`
+
+### 24-bit / 256-color helpers
+- `rgb(r, g, b)` -- 24-bit truecolor foreground (clamped to `0..255`)
+- `color256(idx)` -- 256-color foreground (clamped to `0..255`)
+- `on_rgb(r, g, b)` -- set a 24-bit background color (clamped to `0..255`)
+
+### Text attributes / styles
+
+- `bold()`
+- `dim()` (aliases: `faint()` and `dark()`)
+- `italic()`
+- `underline()`
+- `blink()` 
+- `inverse()` (alias: `reverse`)
+- `hidden()` (aliases: `concealed`, `password`)
+- `strike()`
 
 ---
 
