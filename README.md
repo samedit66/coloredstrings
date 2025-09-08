@@ -29,6 +29,12 @@ pip install git+https://github.com/samedit66/coloredstrings.git
 
 ## Quick start
 
+Run a demo:
+```bash
+python -m coloredstrings
+```
+
+Test in code:
 ```python
 import coloredstrings
 
