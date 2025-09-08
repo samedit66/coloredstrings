@@ -2,13 +2,7 @@ import contextlib
 import functools
 
 
-try:
-    import forbiddenfruit as ff
-except Exception as e:
-    raise ImportError(
-        "forbiddenfruit is required for this module to patch builtins. "
-        "Install it with `pip install forbiddenfruit`."
-    ) from e
+import forbiddenfruit as ff
 
 
 ANSI = {
