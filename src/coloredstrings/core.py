@@ -20,6 +20,7 @@ ANSI = {
     "blink": "\033[5m",
     "inverse": "\033[7m",
     "hidden": "\033[8m",
+    "strike": "\033[9m",
     "black": "\033[30m",
     "red": "\033[31m",
     "green": "\033[32m",
@@ -42,6 +43,38 @@ ANSI = {
 def _wrap(code: str, text: str) -> str:
     """Wrap text with an ANSI code and reset at the end (safe for chaining)."""
     return f"{code}{text}{ANSI['reset']}"
+
+
+def bold(self):
+    return _wrap(ANSI["bold"], self)
+
+
+def dim(self):
+    return _wrap(ANSI["dim"], self)
+
+
+def italic(self):
+    return _wrap(ANSI["italic"], self)
+
+
+def underline(self):
+    return _wrap(ANSI["underline"], self)
+
+
+def blink(self):
+    return _wrap(ANSI["blink"], self)
+
+
+def inverse(self):
+    return _wrap(ANSI["inverse"], self)
+
+
+def hidden(self):
+    return _wrap(ANSI["hidden"], self)
+
+
+def strike(self):
+    return _wrap(ANSI["strike"], self)
 
 
 def red(self):
@@ -78,26 +111,6 @@ def black(self):
 
 def bright_red(self):
     return _wrap(ANSI["bright_red"], self)
-
-
-def bold(self):
-    return _wrap(ANSI["bold"], self)
-
-
-def dim(self):
-    return _wrap(ANSI["dim"], self)
-
-
-def italic(self):
-    return _wrap(ANSI["italic"], self)
-
-
-def underline(self):
-    return _wrap(ANSI["underline"], self)
-
-
-def inverse(self):
-    return _wrap(ANSI["inverse"], self)
 
 
 def on_red(self):
@@ -223,6 +236,19 @@ def color256(self, idx: int):
 
 
 _METHODS = {
+    "bold": bold,
+    "dim": dim,
+    "faint": dim,
+    "dark": dim,
+    "italic": italic,
+    "underline": underline,
+    "blink": blink,
+    "reverse": inverse,
+    "inverse": inverse,
+    "hidden": hidden,
+    "concealed": hidden,
+    "password": hidden,
+    "strike": strike,
     "red": red,
     "green": green,
     "yellow": yellow,
@@ -239,11 +265,6 @@ _METHODS = {
     "bright_magenta": bright_magenta,
     "bright_cyan": bright_cyan,
     "bright_white": bright_white,
-    "bold": bold,
-    "dim": dim,
-    "italic": italic,
-    "underline": underline,
-    "inverse": inverse,
     "on_black": on_black,
     "on_red": on_red,
     "on_green": on_green,

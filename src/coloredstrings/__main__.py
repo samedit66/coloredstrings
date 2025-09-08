@@ -57,6 +57,9 @@ with coloredstrings.patched():
     print("Reversed blue color".blue().inverse())
     print("Bold underline inverse cyan color".cyan().bold().underline().inverse())
     print("Dim white color".white().dim())
+    print("Hidden:", "you can't see it, eh?".hidden())
+    print("Striked".strike())
+    print("Blink hot pink color".blink().rgb(255, 105, 180))
 
     print("-" * 78)
 
