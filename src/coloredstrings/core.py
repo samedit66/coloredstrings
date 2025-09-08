@@ -108,6 +108,90 @@ def on_green(self):
     return _wrap("\033[42m", self)
 
 
+def bright_black(self):
+    return _wrap(ANSI["bright_black"], self)
+
+
+def bright_green(self):
+    return _wrap(ANSI["bright_green"], self)
+
+
+def bright_yellow(self):
+    return _wrap(ANSI["bright_yellow"], self)
+
+
+def bright_blue(self):
+    return _wrap(ANSI["bright_blue"], self)
+
+
+def bright_magenta(self):
+    return _wrap(ANSI["bright_magenta"], self)
+
+
+def bright_cyan(self):
+    return _wrap(ANSI["bright_cyan"], self)
+
+
+def bright_white(self):
+    return _wrap(ANSI["bright_white"], self)
+
+
+def on_black(self):
+    return _wrap("\033[40m", self)
+
+
+def on_white(self):
+    return _wrap("\033[47m", self)
+
+
+def on_yellow(self):
+    return _wrap("\033[43m", self)
+
+
+def on_blue(self):
+    return _wrap("\033[44m", self)
+
+
+def on_magenta(self):
+    return _wrap("\033[45m", self)
+
+
+def on_cyan(self):
+    return _wrap("\033[46m", self)
+
+
+def on_bright_black(self):
+    return _wrap("\033[100m", self)
+
+
+def on_bright_red(self):
+    return _wrap("\033[101m", self)
+
+
+def on_bright_green(self):
+    return _wrap("\033[102m", self)
+
+
+def on_bright_yellow(self):
+    return _wrap("\033[103m", self)
+
+
+def on_bright_blue(self):
+    return _wrap("\033[104m", self)
+
+
+def on_bright_magenta(self):
+    return _wrap("\033[105m", self)
+
+
+def on_bright_cyan(self):
+    return _wrap("\033[106m", self)
+
+
+def on_bright_white(self):
+    return _wrap("\033[107m", self)
+
+
 def _clamp(value: int, min_value: int, max_value: int) -> int:
     return max(min_value, min(max_value, int(value)))
 
@@ -147,14 +231,35 @@ _METHODS = {
     "cyan": cyan,
     "white": white,
     "black": black,
+    "bright_black": bright_black,
     "bright_red": bright_red,
+    "bright_green": bright_green,
+    "bright_yellow": bright_yellow,
+    "bright_blue": bright_blue,
+    "bright_magenta": bright_magenta,
+    "bright_cyan": bright_cyan,
+    "bright_white": bright_white,
     "bold": bold,
     "dim": dim,
     "italic": italic,
     "underline": underline,
     "inverse": inverse,
+    "on_black": on_black,
     "on_red": on_red,
     "on_green": on_green,
+    "on_yellow": on_yellow,
+    "on_blue": on_blue,
+    "on_magenta": on_magenta,
+    "on_cyan": on_cyan,
+    "on_white": on_white,
+    "on_bright_black": on_bright_black,
+    "on_bright_red": on_bright_red,
+    "on_bright_green": on_bright_green,
+    "on_bright_yellow": on_bright_yellow,
+    "on_bright_blue": on_bright_blue,
+    "on_bright_magenta": on_bright_magenta,
+    "on_bright_cyan": on_bright_cyan,
+    "on_bright_white": on_bright_white,
     "rgb": rgb,
     "on_rgb": on_rgb,
     "color256": color256,
