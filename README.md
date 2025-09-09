@@ -158,7 +158,8 @@ This reads more like natural prose and keeps color usage local to the value bein
 - `dim()` (aliases: `faint()` and `dark()`)
 - `italic()`
 - `underline()`
-- `blink()` 
+- `blink()` (alias: `slow_blink()`)
+- `rapid_blink()`
 - `inverse()` (alias: `reverse()`)
 - `hidden()` (aliases: `concealed()` and `password()`)
 - `strike()`
