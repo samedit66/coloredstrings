@@ -1,206 +1,273 @@
 import contextlib
 import functools
+import typing
 
 
 import forbiddenfruit as ff
 
 
-ANSI = {
-    "reset": "\033[0m",
-    "bold": "\033[1m",
-    "dim": "\033[2m",
-    "italic": "\033[3m",
-    "underline": "\033[4m",
-    "blink": "\033[5m",
-    "inverse": "\033[7m",
-    "hidden": "\033[8m",
-    "strike": "\033[9m",
-    "black": "\033[30m",
-    "grey": "\033[30m",
-    "gray": "\033[30m",
-    "red": "\033[31m",
-    "green": "\033[32m",
-    "yellow": "\033[33m",
-    "blue": "\033[34m",
-    "magenta": "\033[35m",
-    "cyan": "\033[36m",
-    "white": "\033[37m",
-    "bright_black": "\033[90m",
-    "bright_grey": "\033[90m",
-    "bright_gray": "\033[90m",
-    "bright_red": "\033[91m",
-    "bright_green": "\033[92m",
-    "bright_yellow": "\033[93m",
-    "bright_blue": "\033[94m",
-    "bright_magenta": "\033[95m",
-    "bright_cyan": "\033[96m",
-    "bright_white": "\033[97m",
-}
+RESET = "\033[0m"
+
+ATTRIBUTES = dict(
+    reset=0,
+    bold=1,
+    dim=2,
+    italic=3,
+    underline=4,
+    slow_blink=5,
+    rapid_blink=6,
+    inverse=7,
+    hidden=8,
+    strike=9,
+)
+
+FOREGROUND = dict(
+    black=30,
+    red=31,
+    green=32,
+    yellow=33,
+    blue=34,
+    magenta=35,
+    cyan=36,
+    white=37,
+    bright_black=90,
+    bright_red=91,
+    bright_green=92,
+    bright_yellow=93,
+    bright_blue=94,
+    bright_magenta=95,
+    bright_cyan=96,
+    bright_white=97,
+)
+
+BACKGROUND = dict(
+    black=40,
+    red=41,
+    green=42,
+    yellow=43,
+    blue=44,
+    magenta=45,
+    cyan=46,
+    white=47,
+    bright_black=100,
+    bright_red=101,
+    bright_green=102,
+    bright_yellow=103,
+    bright_blue=104,
+    bright_magenta=105,
+    bright_cyan=106,
+    bright_white=107,
+)
 
 
-def _wrap(code: str, text: str) -> str:
-    """Wrap text with an ANSI code and reset at the end (safe for chaining)."""
-    return f"{code}{text}{ANSI['reset']}"
+def colorize_ansi(
+    text: str,
+    style: typing.Optional[str] = None,
+    foreground: typing.Optional[str] = None,
+    background: typing.Optional[str] = None,
+) -> str:
+    codes: list[str] = []
+    if style:
+        codes.append(str(ATTRIBUTES[style]))
+    if foreground:
+        codes.append(str(FOREGROUND[foreground]))
+    if background:
+        codes.append(str(BACKGROUND[background]))
+
+    if codes:
+        prefix = f"\033[{';'.join(codes)}m"
+        return f"{prefix}{text}{RESET}"
+
+    return text
+
+
+def colorize_256(text: str, n: int) -> str:
+    code = f"\033[38;5;{n}m"
+    return f"{code}{text}{RESET}"
+
+
+def colorize_true_color(
+    text: str,
+    foreground: typing.Optional[typing.Tuple[int, int, int]] = None,
+    background: typing.Optional[typing.Tuple[int, int, int]] = None,
+) -> str:
+    codes: list[str] = []
+    if foreground:
+        r, g, b = foreground
+        codes.append(f"38;2;{r};{g};{b}")
+    if background:
+        r, g, b = background
+        codes.append(f"48;2;{r};{g};{b}")
+
+    if codes:
+        prefix = f"\033[{';'.join(codes)}m"
+        return f"{prefix}{text}{RESET}"
+
+    return text
 
 
 def bold(self):
-    return _wrap(ANSI["bold"], self)
+    return colorize_ansi(self, style="bold")
 
 
 def dim(self):
-    return _wrap(ANSI["dim"], self)
+    return colorize_ansi(self, style="dim")
 
 
 def italic(self):
-    return _wrap(ANSI["italic"], self)
+    return colorize_ansi(self, style="italic")
 
 
 def underline(self):
-    return _wrap(ANSI["underline"], self)
+    return colorize_ansi(self, style="underline")
 
 
 def blink(self):
-    return _wrap(ANSI["blink"], self)
+    return colorize_ansi(self, style="slow_blink")
+
+
+def rapid_blink(self):
+    return colorize_ansi(self, style="rapid_blink")
 
 
 def inverse(self):
-    return _wrap(ANSI["inverse"], self)
+    return colorize_ansi(self, style="inverse")
 
 
 def hidden(self):
-    return _wrap(ANSI["hidden"], self)
+    return colorize_ansi(self, style="hidden")
 
 
 def strike(self):
-    return _wrap(ANSI["strike"], self)
+    return colorize_ansi(self, style="strike")
 
 
 def red(self):
-    return _wrap(ANSI["red"], self)
+    return colorize_ansi(self, foreground="red")
 
 
 def green(self):
-    return _wrap(ANSI["green"], self)
+    return colorize_ansi(self, foreground="green")
 
 
 def yellow(self):
-    return _wrap(ANSI["yellow"], self)
+    return colorize_ansi(self, foreground="yellow")
 
 
 def blue(self):
-    return _wrap(ANSI["blue"], self)
+    return colorize_ansi(self, foreground="blue")
 
 
 def magenta(self):
-    return _wrap(ANSI["magenta"], self)
+    return colorize_ansi(self, foreground="magenta")
 
 
 def cyan(self):
-    return _wrap(ANSI["cyan"], self)
+    return colorize_ansi(self, foreground="cyan")
 
 
 def white(self):
-    return _wrap(ANSI["white"], self)
+    return colorize_ansi(self, foreground="white")
 
 
 def black(self):
-    return _wrap(ANSI["black"], self)
+    return colorize_ansi(self, foreground="black")
 
 
 def bright_red(self):
-    return _wrap(ANSI["bright_red"], self)
+    return colorize_ansi(self, foreground="bright_red")
 
 
 def on_red(self):
-    return _wrap("\033[41m", self)
+    return colorize_ansi(self, background="red")
 
 
 def on_green(self):
-    return _wrap("\033[42m", self)
+    return colorize_ansi(self, background="green")
 
 
 def bright_black(self):
-    return _wrap(ANSI["bright_black"], self)
+    return colorize_ansi(self, foreground="bright_black")
 
 
 def bright_green(self):
-    return _wrap(ANSI["bright_green"], self)
+    return colorize_ansi(self, foreground="bright_green")
 
 
 def bright_yellow(self):
-    return _wrap(ANSI["bright_yellow"], self)
+    return colorize_ansi(self, foreground="bright_yellow")
 
 
 def bright_blue(self):
-    return _wrap(ANSI["bright_blue"], self)
+    return colorize_ansi(self, foreground="bright_blue")
 
 
 def bright_magenta(self):
-    return _wrap(ANSI["bright_magenta"], self)
+    return colorize_ansi(self, foreground="bright_magenta")
 
 
 def bright_cyan(self):
-    return _wrap(ANSI["bright_cyan"], self)
+    return colorize_ansi(self, foreground="bright_cyan")
 
 
 def bright_white(self):
-    return _wrap(ANSI["bright_white"], self)
+    return colorize_ansi(self, foreground="bright_white")
 
 
 def on_black(self):
-    return _wrap("\033[40m", self)
+    return colorize_ansi(self, background="black")
 
 
 def on_white(self):
-    return _wrap("\033[47m", self)
+    return colorize_ansi(self, background="white")
 
 
 def on_yellow(self):
-    return _wrap("\033[43m", self)
+    return colorize_ansi(self, background="yellow")
 
 
 def on_blue(self):
-    return _wrap("\033[44m", self)
+    return colorize_ansi(self, background="blue")
 
 
 def on_magenta(self):
-    return _wrap("\033[45m", self)
+    return colorize_ansi(self, background="magenta")
 
 
 def on_cyan(self):
-    return _wrap("\033[46m", self)
+    return colorize_ansi(self, background="cyan")
 
 
 def on_bright_black(self):
-    return _wrap("\033[100m", self)
+    return colorize_ansi(self, background="bright_black")
 
 
 def on_bright_red(self):
-    return _wrap("\033[101m", self)
+    return colorize_ansi(self, background="bright_red")
 
 
 def on_bright_green(self):
-    return _wrap("\033[102m", self)
+    return colorize_ansi(self, background="bright_green")
 
 
 def on_bright_yellow(self):
-    return _wrap("\033[103m", self)
+    return colorize_ansi(self, background="bright_yellow")
 
 
 def on_bright_blue(self):
-    return _wrap("\033[104m", self)
+    return colorize_ansi(self, background="bright_blue")
 
 
 def on_bright_magenta(self):
-    return _wrap("\033[105m", self)
+    return colorize_ansi(self, background="bright_magenta")
 
 
 def on_bright_cyan(self):
-    return _wrap("\033[106m", self)
+    return colorize_ansi(self, background="bright_cyan")
 
 
 def on_bright_white(self):
-    return _wrap("\033[107m", self)
+    return colorize_ansi(self, background="bright_white")
 
 
 def _clamp(value: int, min_value: int, max_value: int) -> int:
@@ -213,8 +280,7 @@ def on_rgb(self, r: int, g: int, b: int):
     r = _clamp(r, 0, 255)
     g = _clamp(g, 0, 255)
     b = _clamp(b, 0, 255)
-    code = f"\033[48;2;{r};{g};{b}m"
-    return _wrap(code, self)
+    return colorize_true_color(self, background=(r, g, b))
 
 
 def rgb(self, r: int, g: int, b: int):
@@ -223,14 +289,12 @@ def rgb(self, r: int, g: int, b: int):
     r = _clamp(r, 0, 255)
     g = _clamp(g, 0, 255)
     b = _clamp(b, 0, 255)
-    code = f"\033[38;2;{r};{g};{b}m"
-    return _wrap(code, self)
+    return colorize_true_color(self, foreground=(r, g, b))
 
 
 def color256(self, idx: int):
     idx = _clamp(idx, 0, 255)
-    code = f"\033[38;5;{idx}m"
-    return _wrap(code, self)
+    return colorize_256(self, idx)
 
 
 _METHODS = {
@@ -241,6 +305,8 @@ _METHODS = {
     "italic": italic,
     "underline": underline,
     "blink": blink,
+    "slow_blink": blink,
+    "rapid_blink": rapid_blink,
     "reverse": inverse,
     "inverse": inverse,
     "hidden": hidden,

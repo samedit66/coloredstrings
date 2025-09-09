@@ -60,6 +60,7 @@ with coloredstrings.patched():
     print("Hidden:", "you can't see it, eh?".hidden())
     print("Striked".strike())
     print("Blink hot pink color".blink().rgb(255, 105, 180))
+    print("Rapid pure magenta color".rapid_blink().rgb(255, 0, 255))
 
     print("-" * 78)
 
