@@ -67,9 +67,9 @@ coloredstrings.unpatch()
 
 ---
 
-## Why use this? -- Isn't patching `str` un-Pythonic?
+## Why use this? Isn't patching `str` un-Pythonic?
 
-Patching builtins is a controversial choice, and at first glance it __may__ look un-Pythonic. Libraries like `colorama` require you to import constants and build strings by concatenation:
+Patching builtins is a controversial choice, and at first glance it _may_ look un-Pythonic. Libraries like `colorama` require you to import constants and build strings by concatenation:
 
 ```python
 from colorama import Fore, Style
@@ -105,9 +105,9 @@ This reads more like natural prose and keeps color usage local to the value bein
 ## API
 
 ### Patch `str`
-- `patch()` — attach methods to `str`
-- `unpatch()` — remove the attached methods
-- `patched()` - automatically calls `patch()` and `unpatch()` in a given context
+- `patch()` -- attach methods to `str`
+- `unpatch()` -- remove the attached methods
+- `patched()` -- automatically calls `patch()` and `unpatch()` in a given context
 
 ### Foreground colors (basic & bright)
 
@@ -159,8 +159,8 @@ This reads more like natural prose and keeps color usage local to the value bein
 - `italic()`
 - `underline()`
 - `blink()` 
-- `inverse()` (alias: `reverse`)
-- `hidden()` (aliases: `concealed`, `password`)
+- `inverse()` (alias: `reverse()`)
+- `hidden()` (aliases: `concealed()` and `password()`)
 - `strike()`
 
 ---
