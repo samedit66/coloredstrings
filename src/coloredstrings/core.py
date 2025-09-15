@@ -5,11 +5,10 @@ import typing
 
 import forbiddenfruit as ff
 
-
-RESET = "\033[0m"
+OPENING = "\033["
+RESET = f"{OPENING}0m"
 
 ATTRIBUTES = dict(
-    reset=0,
     bold=1,
     dim=2,
     italic=3,
@@ -75,14 +74,14 @@ def colorize_ansi(
         codes.append(str(BACKGROUND[background]))
 
     if codes:
-        prefix = f"\033[{';'.join(codes)}m"
+        prefix = f"{OPENING}{';'.join(codes)}m"
         return f"{prefix}{text}{RESET}"
 
     return text
 
 
 def colorize_256(text: str, n: int) -> str:
-    code = f"\033[38;5;{n}m"
+    code = f"{OPENING}38;5;{n}m"
     return f"{code}{text}{RESET}"
 
 
@@ -100,7 +99,7 @@ def colorize_true_color(
         codes.append(f"48;2;{r};{g};{b}")
 
     if codes:
-        prefix = f"\033[{';'.join(codes)}m"
+        prefix = f"{OPENING}{';'.join(codes)}m"
         return f"{prefix}{text}{RESET}"
 
     return text
