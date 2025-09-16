@@ -69,7 +69,7 @@ If you like `coloredstrings` but fear to patch `str` globally for some reasons, 
 ```python
 from coloredstrings import colors
 
-print(colors.blue("It's also possible to to use `colors` module!"))
+print(colors.blue("It's also possible to use `colors` module!"))
 print(colors.underline("But it's kinda longer tho..."))
 ```
 
@@ -159,6 +159,7 @@ This reads more like natural prose and keeps color usage local to the value bein
 - `rgb(r, g, b)` -- 24-bit truecolor foreground (clamped to `0..255`)
 - `color256(idx)` -- 256-color foreground (clamped to `0..255`)
 - `on_rgb(r, g, b)` -- set a 24-bit background color (clamped to `0..255`)
+- `on_color256(idx)` -- set a 256-color background color (clamped to `0..255`)
 
 ### Text attributes / styles
 
