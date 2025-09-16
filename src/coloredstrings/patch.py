@@ -1,7 +1,6 @@
 import contextlib
 import functools
 
-
 import forbiddenfruit as ff
 
 from coloredstrings import colors
