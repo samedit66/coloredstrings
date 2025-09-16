@@ -36,20 +36,20 @@ python -m coloredstrings
 
 Test in code:
 ```python
-import coloredstrings
+import coloredstrings as cs
 
 # Patched `str` methods are available only within the context
 def warn(msg: str) -> None:
-    with coloredstrings.patched():
+    with cs.patched():
         print("warning:".yellow().bold(), msg)
 
 # Same idea, but using a decorator
-@coloredstrings.patched
+@cs.patched
 def info(msg: str) -> None:
     print("[info]:".blue(), msg)
 
 # If you're brave enough and really want it, you can patch `str` globally
-coloredstrings.patch()
+cs.patch()
 
 print("ok".green())
 print("warn".yellow().bold())
@@ -62,7 +62,15 @@ print("custom".rgb(123, 45, 200))
 print("teal-ish".color256(37))
 
 # And don't forget to unpatch it afterwards
-coloredstrings.unpatch()
+cs.unpatch()
+```
+
+If you like `coloredstrings` but fear to patch `str` globally for some reasons, you can always colorize directly with little help from `colors` module:
+```python
+from coloredstrings import colors
+
+print(colors.blue("It's also possible to to use `colors` module!"))
+print(colors.underline("But it's kinda longer tho..."))
 ```
 
 ---
@@ -163,6 +171,24 @@ This reads more like natural prose and keeps color usage local to the value bein
 - `inverse()` (alias: `reverse()`)
 - `hidden()` (aliases: `concealed()` and `password()`)
 - `strike()`
+
+---
+
+## Chaining behavior
+
+One important detail of `coloredstrings` is how styles and colors combine when you chain methods:
+
+- **`"ok".green().bold()` vs `"ok".bold().green()`**  
+  The order does not matter. Both calls produce the same result: green text with bold style.  
+  Internally, `coloredstrings` merges the styles into a single escape sequence, so you don’t get duplicated codes.
+
+- **`"error".red().blue()`**  
+  Only the last foreground color applies. In this case, the text will be **blue**, not red. Foreground/background colors are mutually exclusive, so the newer one replaces the older one.
+
+- **`"title".underline().underline()`**  
+  Repeating the same style does not add multiple codes. The library ensures there’s only one `underline` escape sequence, keeping the output clean and deterministic.
+
+This merging logic makes chained styling predictable: attributes (bold, italic, underline, etc.) stack, while foreground/background colors override each other.
 
 ---
 
