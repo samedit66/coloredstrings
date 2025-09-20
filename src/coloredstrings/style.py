@@ -76,59 +76,52 @@ class Style:
     fore: typing.Union[AnsiFore | XColor | RgbColor | None] = None
     back: typing.Union[AnsiBack | XColor | RgbColor | None] = None
 
-    def merge(self, other: Style) -> Style:
-        attributes = self.attributes.union(other.attributes)
-        fore = other.fore or self.fore
-        back = other.back or self.back
-        return Style(attributes, fore, back)
 
-    def apply(self, text: str) -> str:
-        ESC = "\x1b["
-        RESET = ESC + "0m"
+def apply(style: Style, text: str) -> str:
+    params = []
 
-        params: typing.List[str] = []
+    # attributes: Attribute enum values already map to SGR codes
+    params.extend(sorted(int(a) for a in style.attributes))
 
-        # attributes: Attribute enum values already map to SGR codes
-        for attr in sorted(self.attributes, key=lambda a: int(a)):
-            params.append(str(int(attr)))
+    # foreground
+    if isinstance(style.fore, AnsiFore):
+        params.append(int(style.fore))
+    elif isinstance(style.fore, XColor):
+        # 38;5;{index}
+        params.extend([38, 5, style.fore.index])
+    elif isinstance(style.fore, RgbColor):
+        # 38;2;r;g;b
+        params.extend([38, 2, style.fore.r, style.fore.g, style.fore.b])
 
-        # foreground
-        if isinstance(self.fore, AnsiFore):
-            params.append(str(int(self.fore)))
-        elif isinstance(self.fore, XColor):
-            # 38;5;{index}
-            params.extend([str(38), str(5), str(self.fore.index)])
-        elif isinstance(self.fore, RgbColor):
-            # 38;2;r;g;b
-            params.extend(
-                [str(38), str(2), str(self.fore.r), str(self.fore.g), str(self.fore.b)]
-            )
+    # background
+    if isinstance(style.back, AnsiBack):
+        params.append(int(style.back))
+    elif isinstance(style.back, XColor):
+        # 48;5;{index}
+        params.extend([48, 5, style.back.index])
+    elif isinstance(style.back, RgbColor):
+        # 48;2;r;g;b
+        params.extend([48, 2, style.back.r, style.back.g, style.back.b])
 
-        # background
-        if isinstance(self.back, AnsiBack):
-            params.append(str(int(self.back)))
-        elif isinstance(self.back, XColor):
-            # 48;5;{index}
-            params.extend([str(48), str(5), str(self.back.index)])
-        elif isinstance(self.back, RgbColor):
-            # 48;2;r;g;b
-            params.extend(
-                [str(48), str(2), str(self.back.r), str(self.back.g), str(self.back.b)]
-            )
+    if not params:
+        return text
 
-        if not params:
-            return text
-
-        opening = ESC + ";".join(params) + "m"
-        return f"{opening}{text}{RESET}"
+    opening = f"{ESC}{';'.join(str(p) for p in params)}m"
+    return f"{opening}{text}{RESET}"
 
 
-def style_of(colored_text: str) -> typing.Tuple[Style, str]:
-    # ESC is defined as "\033[" (i.e. ESC + '['). Check against ESC directly.
+def merge(s1: Style, s2: Style) -> Style:
+    attributes = s1.attributes | s2.attributes
+    fore = s1.fore or s2.fore
+    back = s1.back or s2.back
+    return Style(attributes, fore, back)
+
+
+def parse(colored_text: str) -> typing.Tuple[Style, str]:
     if not colored_text.startswith(ESC):
         return Style(), colored_text
 
-    # strip the initial ESC[ (ESC already contains '[')
+    # strip the initial ESC[
     rest = colored_text[len(ESC) :]
 
     # remove trailing resets (0m) occurrences
@@ -151,9 +144,9 @@ def style_of(colored_text: str) -> typing.Tuple[Style, str]:
         # parse numbers; ignore empty pieces
         nums = [int(s) for s in codes_part.split(";") if s != ""]
 
-    attrs: typing.Set[Attribute] = set()
-    fore: typing.Union[AnsiFore, XColor, RgbColor, None] = None
-    back: typing.Union[AnsiBack, XColor, RgbColor, None] = None
+    attrs = set()
+    fore = None
+    back = None
 
     i = 0
     L = len(nums)

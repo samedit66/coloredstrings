@@ -2,9 +2,9 @@ import coloredstrings.style as S
 
 
 def _stylize(text: str, *args, **kwargs) -> str:
-    old_style, just_text = S.style_of(text)
-    new_style = old_style.merge(S.Style(*args, **kwargs))
-    return new_style.apply(just_text)
+    old_style, just_text = S.parse(text)
+    new_style = S.merge(old_style, S.Style(*args, **kwargs))
+    return S.apply(new_style, just_text)
 
 
 def bold(self: str) -> str:
