@@ -112,8 +112,8 @@ def apply(style: Style, text: str) -> str:
 
 def merge(s1: Style, s2: Style) -> Style:
     attributes = s1.attributes | s2.attributes
-    fore = s1.fore or s2.fore
-    back = s1.back or s2.back
+    fore = s2.fore or s1.fore
+    back = s2.back or s1.back
     return Style(attributes, fore, back)
 
 
