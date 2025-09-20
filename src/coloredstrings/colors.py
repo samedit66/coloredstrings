@@ -197,3 +197,13 @@ def on_color256(self: str, idx: int) -> str:
 def color256(self: str, idx: int) -> str:
     idx = _clamp(idx, 0, 255)
     return _stylize(self, fore=S.XColor(idx))
+
+
+def hex(self, hex_color: str) -> str:
+    color = S.rgb_from_hex(hex_color)
+    return rgb(self, color.r, color.g, color.b)
+
+
+def on_hex(self, hex_color: str) -> str:
+    color = S.rgb_from_hex(hex_color)
+    return on_rgb(self, color.r, color.g, color.b)

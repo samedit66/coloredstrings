@@ -1,3 +1,5 @@
+import pytest
+
 import coloredstrings
 from coloredstrings import style
 
@@ -122,3 +124,40 @@ def test_double_underline_single_escape():
         assert idx != -1
         # there should be only one ESC sequence in the prefix before the 'u'
         assert s.count(style.ESC, 0, idx) == 1
+
+
+def test_on_rgb_clamping():
+    with coloredstrings.patched():
+        txt = "bg".on_rgb(999, -20, 42)
+        # background RGB uses 48;2;r;g;b sequence and values should be clamped into 0..255
+        assert f"{style.ESC}48;2;255;0;42m" in txt
+
+
+def test_on_color256_clamping():
+    with coloredstrings.patched():
+        assert "bg".on_color256(-5).startswith(f"{style.ESC}48;5;0m")
+        assert "bg".on_color256(300).startswith(f"{style.ESC}48;5;255m")
+
+
+def test_hex_short_and_prefixed():
+    with coloredstrings.patched():
+        # short form '#fc0' -> ffcc00 -> 255;204;0
+        s1 = "x".hex("#fc0")
+        assert f"{style.ESC}38;2;255;204;0m" in s1
+        # '0x123456' -> 18;52;86
+        s2 = "y".hex("0x123456")
+        assert f"{style.ESC}38;2;18;52;86m" in s2
+
+
+def test_on_hex_background():
+    with coloredstrings.patched():
+        # 'abc' -> aabbcc -> 170;187;204
+        s = "bg".on_hex("abc")
+        assert f"{style.ESC}48;2;170;187;204m" in s
+
+
+def test_hex_invalid_raises():
+    with coloredstrings.patched():
+        # invalid hex string should raise ValueError coming from rgb_from_hex
+        with pytest.raises(ValueError):
+            "x".hex("zzz")

@@ -2,6 +2,7 @@ from __future__ import annotations
 import dataclasses
 import enum
 import typing
+import re
 
 
 ESC = "\033["
@@ -68,6 +69,37 @@ class RgbColor:
     r: int
     g: int
     b: int
+
+
+def rgb_from_hex(hex_color: str) -> RgbColor:
+    if not isinstance(hex_color, str):
+        raise TypeError("hex_color must be a str")
+
+    s = hex_color.strip()
+
+    # Accepted input:
+    # '#ffcc00', 'ffcc00', '#FC0', 'fc0', '0xffcc00', '0xFC0'
+    if s.lower().startswith("0x"):
+        s = s[2:]
+    if s.startswith("#"):
+        s = s[1:]
+
+    # valid forms: 3 or 6 hex digits
+    if not re.fullmatch(r"[0-9A-Fa-f]{3}|[0-9A-Fa-f]{6}", s):
+        raise ValueError(
+            f"Invalid hex color format: {hex_color!r}. "
+            "Expected formats: '#RRGGBB', 'RRGGBB', '#RGB', 'RGB', or with '0x' prefix."
+        )
+
+    # expand shorthand (e.g. "fc0" -> "ffcc00")
+    if len(s) == 3:
+        s = "".join(ch * 2 for ch in s)
+
+    r = int(s[0:2], 16)
+    g = int(s[2:4], 16)
+    b = int(s[4:6], 16)
+
+    return RgbColor(r=r, g=g, b=b)
 
 
 @dataclasses.dataclass(frozen=True)

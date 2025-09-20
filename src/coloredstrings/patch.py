@@ -62,6 +62,8 @@ _METHODS = {
     "on_rgb": colors.on_rgb,
     "color256": colors.color256,
     "on_color256": colors.on_color256,
+    "hex": colors.hex,
+    "on_hex": colors.on_hex,
 }
 
 
