@@ -57,6 +57,7 @@ print("bad".red(), "on green".on_green())
 
 # 24-bit RGB:
 print("custom".rgb(123, 45, 200))
+print("hex is also supported".hex("#aabbcc"))
 
 # 256-color:
 print("teal-ish".color256(37))
@@ -160,6 +161,8 @@ This reads more like natural prose and keeps color usage local to the value bein
 - `color256(idx)` -- 256-color foreground (clamped to `0..255`)
 - `on_rgb(r, g, b)` -- set a 24-bit background color (clamped to `0..255`)
 - `on_color256(idx)` -- set a 256-color background color (clamped to `0..255`)
+- `hex(hex_color)` -- 24-bit foreground but as a hex (like `"#AABBCC"`)
+- `on_hex(hex_color)` -- set a 24-bit background color but as a hex (like `"#AABBCC"`)
 
 ### Text attributes / styles
 
