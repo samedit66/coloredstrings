@@ -15,6 +15,9 @@ class Attribute(enum.IntEnum):
     INVERSE = enum.auto()
     HIDDEN = enum.auto()
     STRIKE = enum.auto()
+    FRAMED = enum.auto()
+    ENCIRCLED = enum.auto()
+    OVERLINED = enum.auto()
 
 
 class Color(enum.IntEnum):
@@ -197,6 +200,18 @@ class StyleBuilder:
     @property
     def strike(self) -> StyleBuilder:
         return self._with_attrs(Attribute.STRIKE)
+
+    @property
+    def framed(self) -> StyleBuilder:
+        return self._with_attrs(Attribute.FRAMED)
+
+    @property
+    def encircled(self) -> StyleBuilder:
+        return self._with_attrs(Attribute.ENCIRCLED)
+    
+    @property
+    def overlined(self) -> StyleBuilder:
+        return self._with_attrs(Attribute.OVERLINED)
 
     def __repr__(self) -> str:
         return f"StyleBuilder(fg={self.fg!r}, bg={self.bg!r}, attrs={set(self.attrs)!r}, on={self._on})"
