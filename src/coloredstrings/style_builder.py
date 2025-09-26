@@ -155,6 +155,14 @@ class StyleBuilder:
         return self._with_attrs(Attribute.DIM)
 
     @property
+    def faint(self) -> StyleBuilder:
+        return self.dim
+
+    @property
+    def dark(self) -> StyleBuilder:
+        return self.dim
+
+    @property
     def italic(self) -> StyleBuilder:
         return self._with_attrs(Attribute.ITALIC)
 
@@ -167,12 +175,20 @@ class StyleBuilder:
         return self._with_attrs(Attribute.SLOW_BLINK)
 
     @property
+    def slow_blink(self) -> StyleBuilder:
+        return self.blink
+
+    @property
     def rapid_blink(self) -> StyleBuilder:
         return self._with_attrs(Attribute.RAPID_BLINK)
 
     @property
     def inverse(self) -> StyleBuilder:
         return self._with_attrs(Attribute.INVERSE)
+
+    @property
+    def reverse(self) -> StyleBuilder:
+        return self.inverse
 
     @property
     def hidden(self) -> StyleBuilder:
