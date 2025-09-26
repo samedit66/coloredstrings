@@ -211,9 +211,6 @@ class StyleBuilder:
 
 
 def rgb_from_hex(color_code: str) -> Rgb:
-    if not isinstance(color_code, str):
-        raise TypeError("color_code must be a str")
-
     s = color_code.strip()
 
     # Accepted input:
