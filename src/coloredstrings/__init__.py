@@ -1,3 +1,9 @@
-from .patch import patch, unpatch, patched
+from .style_builder import StyleBuilder
 
-__all__ = ["patch", "unpatch", "patched"]
+
+styled = StyleBuilder()
+
+__all__ = [
+    "styled",
+    "StyleBuilder",
+]
