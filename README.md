@@ -25,7 +25,7 @@ print(style.blue.bold("Info:"), "Everything is OK")
 print(style.italic.green("Success!"))
 ```
 
-![alt text](media/example_1.png)
+![Colored examples](https://github.com/samedit66/coloredstrings/blob/main/media/example_1.png?raw=true)
 
 ---
 
