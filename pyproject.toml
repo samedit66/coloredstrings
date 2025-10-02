@@ -30,9 +30,7 @@ classifiers = [
     "Topic :: Terminals",
     "Topic :: Software Development :: Libraries",
 ]
-dependencies = [
-    "forbiddenfruit>=0.1.4",
-]
+dependencies = []
 
 [project.urls]
 "Homepage" = "https://github.com/samedit66/coloredstrings"
@@ -50,4 +48,7 @@ dev = [
     "pre-commit>=4.3.0",
     "pytest>=8.4.1",
     "ruff>=0.12.11",
+]
+patched = [
+    "forbiddenfruit>=0.1.4",
 ]

@@ -24,9 +24,6 @@ wheels = [
 name = "coloredstrings"
 version = "1.3.0"
 source = { editable = "." }
-dependencies = [
-    { name = "forbiddenfruit" },
-]
 
 [package.dev-dependencies]
 dev = [
@@ -34,9 +31,11 @@ dev = [
     { name = "pytest" },
     { name = "ruff" },
 ]
+patched = [
+    { name = "forbiddenfruit" },
+]
 
 [package.metadata]
-requires-dist = [{ name = "forbiddenfruit", specifier = ">=0.1.4" }]
 
 [package.metadata.requires-dev]
 dev = [
@@ -44,6 +43,7 @@ dev = [
     { name = "pytest", specifier = ">=8.4.1" },
     { name = "ruff", specifier = ">=0.12.11" },
 ]
+patched = [{ name = "forbiddenfruit", specifier = ">=0.1.4" }]
 
 [[package]]
 name = "distlib"
