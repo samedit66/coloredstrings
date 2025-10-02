@@ -32,7 +32,10 @@ class StyleBuilder:
         mode: typing.Optional[types.ColorMode] = None,
     ) -> str:
         if mode is None:
-            mode = self._default_mode or color_support.detect_color_support()
+            if self._default_mode is not None:
+                mode = self._default_mode
+            else:
+                mode = color_support.detect_color_support()
 
         if len(args) == 1 and isinstance(args[0], str):
             text = args[0]
