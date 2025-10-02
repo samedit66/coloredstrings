@@ -1,20 +1,20 @@
 import pytest
 
 from coloredstrings.patch import (
-    patch,
-    unpatch,
-    patched,
+    patch_strings,
+    unpatch_strings,
+    colored_strings,
 )
 
 
 def test_empty_string():
-    with patched():
+    with colored_strings():
         assert "".red == "\033[31m\033[39m"
 
 
 def test_context_manager_basic_color():
     def perror(message: str):
-        with patched():
+        with colored_strings():
             return message.red
 
     msg = perror("fail")
@@ -24,7 +24,7 @@ def test_context_manager_basic_color():
 
 
 def test_decorator_basic():
-    @patched
+    @colored_strings
     def log_info(message: str):
         # Demonstrates patching via decorator
         colored = "INFO".blue
@@ -37,7 +37,7 @@ def test_decorator_basic():
 
 
 def test_multiple_methods_chain():
-    with patched():
+    with colored_strings():
         text = "hi".red.bold.underline
         # current implementation emits separate start codes; verify all are present before the text
         idx = text.find("hi")
@@ -51,30 +51,30 @@ def test_multiple_methods_chain():
 
 
 def test_rgb_values_clamped():
-    with patched():
+    with colored_strings():
         txt = "rgb".rgb(999, -20, 42)
         # implementation maps RGB to 256-color in default mode
         assert "\033[38;5;" in txt
 
 
 def test_color256_clamping():
-    with patched():
+    with colored_strings():
         # current behavior does not clamp indices; just ensure 256-color prefix is used
         assert "color".color256(-1).startswith("\033[38;5;")
         assert "color".color256(300).startswith("\033[38;5;")
 
 
 def test_patch_and_unpatch_manual():
-    patch()
+    patch_strings()
     assert hasattr(str, "red")
     assert "ok".red.startswith("\033[31m")
 
-    unpatch()
+    unpatch_strings()
     assert not hasattr(str, "red")
 
 
 def test_multiple_foregrounds_and_styles_present():
-    with patched():
+    with colored_strings():
         s = "ok"
         out = s.yellow
         assert "\033[33m" in out
@@ -87,7 +87,7 @@ def test_multiple_foregrounds_and_styles_present():
 
 
 def test_chaining_order_and_reset_behavior():
-    with patched():
+    with colored_strings():
         s = "x"
         res = s.red.bold
         # ensure both start codes are present regardless of order
@@ -97,7 +97,7 @@ def test_chaining_order_and_reset_behavior():
 
 
 def test_last_foreground_wins():
-    with patched():
+    with colored_strings():
         s = "Hello".green.red
         # last foreground before text should be red
         idx = s.find("Hello")
@@ -108,7 +108,7 @@ def test_last_foreground_wins():
 
 
 def test_double_underline_single_escape():
-    with patched():
+    with colored_strings():
         s = "u".underline.underline
         # find index of the plain text 'u' (after opening SGR)
         idx = s.find("u")
@@ -118,21 +118,21 @@ def test_double_underline_single_escape():
 
 
 def test_on_rgb_clamping():
-    with patched():
+    with colored_strings():
         txt = "bg".on_rgb(999, -20, 42)
         # background RGB maps to 256-color in default mode
         assert "\033[48;5;" in txt
 
 
 def test_on_color256_clamping():
-    with patched():
+    with colored_strings():
         # ensure 256-color background prefix is used
         assert "bg".on_color256(-5).startswith("\033[48;5;")
         assert "bg".on_color256(300).startswith("\033[48;5;")
 
 
 def test_hex_short_and_prefixed():
-    with patched():
+    with colored_strings():
         # short form '#fc0' -> ffcc00 -> maps to 256-color in default mode
         s1 = "x".hex("#fc0")
         assert "\033[38;5;" in s1
@@ -142,14 +142,14 @@ def test_hex_short_and_prefixed():
 
 
 def test_on_hex_background():
-    with patched():
+    with colored_strings():
         # 'abc' -> aabbcc -> maps to 256-color background in default mode
         s = "bg".on_hex("abc")
         assert "\033[48;5;" in s
 
 
 def test_hex_invalid_raises():
-    with patched():
+    with colored_strings():
         # invalid hex string should raise ValueError coming from rgb_from_hex
         with pytest.raises(ValueError):
             "x".hex("zzz")
