@@ -290,7 +290,7 @@ _METHODS = {
 }
 
 
-def patch():
+def patch_strings():
     """Attach all color/format methods to built-in `str`."""
     for name, func in _PROPERTIES.items():
         ff.curse(str, name, property(func))
@@ -298,26 +298,26 @@ def patch():
         ff.curse(str, name, func)
 
 
-def unpatch():
+def unpatch_strings():
     """Remove the added methods from `str`"""
     for name in itertools.chain(_PROPERTIES.keys(), _METHODS.keys()):
         ff.reverse(str, name)
 
 
-def patched(func=None):
+def colored_strings(func=None):
     """Attach all color/format methods to built-in `str` in a limited scope.
 
     Examples:
     ```python
-    import coloredstrings
+    from coloredstrings.patch import colored_strings
 
     # Patched `str` methods are available only within the context
     def warn(msg: str) -> None:
-        with coloredstrings.patched():
+        with colored_strings():
             print("warning:".yellow.bold, msg)
 
     # Same idea, but using a decorator
-    @coloredstrings.patched
+    @colored_strings
     def info(msg: str) -> None:
         print("[info]:".blue, msg)
     ```
@@ -326,20 +326,20 @@ def patched(func=None):
 
         @contextlib.contextmanager
         def _cm():
-            patch()
+            patch_strings()
             try:
                 yield
             finally:
-                unpatch()
+                unpatch_strings()
 
         return _cm()
 
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        patch()
+        patch_strings()
         try:
             return func(*args, **kwargs)
         finally:
-            unpatch()
+            unpatch_strings()
 
     return wrapper
