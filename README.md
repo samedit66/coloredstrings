@@ -248,3 +248,15 @@ Under the hood `coloredstrings[patched]` uses `forbiddenfruit` package, as a res
 
 > Forbbiden Fruit is tested on CPython 3.7-3.13.
 > Since Forbidden Fruit is fundamentally dependent on the C API, this library won't work on other python implementations, such as Jython, pypy, etc.
+
+---
+
+## Contributing
+
+I’d love your help to make coloredstrings even better!
+
+- 💡 Got an idea or found a bug? [Open an issue](https://github.com/samedit66/coloredstrings/issues) and let’s talk about it
+- 🔧 Want to improve the code? PRs are always welcome! Please include tests for any new behavior.
+- ♻️ Try to keep changes backward-compatible where possible
+- 🎨 Adding new styles or helpers? Don’t forget to update the README and include tests to ensure ANSI - sequences open and close correctly
+-  ⭐ If you like this project, consider giving it a star - it really helps others discover it!
