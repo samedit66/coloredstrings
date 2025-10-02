@@ -1,5 +1,10 @@
 import pytest
 
+import importlib.util
+
+if not importlib.util.find_spec("forbiddenfruit"):
+    pytest.skip("forbiddenfruit is not installed", allow_module_level=True)
+
 from coloredstrings.patch import (
     patch_strings,
     unpatch_strings,
