@@ -2,10 +2,10 @@ from .style_builder import StyleBuilder
 from .types import ColorMode
 
 
-styled = StyleBuilder()
+style = StyleBuilder()
 
 __all__ = [
-    "styled",
+    "style",
     "ColorMode",
     "StyleBuilder",
 ]
