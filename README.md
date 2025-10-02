@@ -229,7 +229,7 @@ from coloredstrings.patch import colored_strings
 # colored_strings() is a context manager that
 # temporarily adds style methods to str
 with colored_strings():
-    print("error:".red(), "something went wrong")
+    print("error:".red, "something went wrong")
 
 # colored_strings() is also a decorator with same mechanics:
 # style methods are only available inside the `hello` function
