@@ -114,126 +114,216 @@ print(warning("Warning!"))
 
 ---
 
-## `style` and `StyleBuilder` - API details
+## Usage
 
-`style` is a convenience global instance of `StyleBuilder`. It provides a chainable API for composing foreground color, background color (via the `.on` helper), and text attributes.
-
-**Key behaviour**
-
-- `style` is immutable: chaining returns new `StyleBuilder` instances — no mutable global color state.
-- `style(...)` (i.e. `StyleBuilder.__call__`) accepts either:
-  - a single `str` argument, or
-  - multiple arguments which are converted to strings and joined using `sep` (default is a single space).
-- Color detection: by default the library tries to detect supported color mode (16/256/truecolor) for the current terminal. You can override it with `color_mode()`. If you want to find out what color mode is detected, use this:
+All you need to use (mostly) is the global style object - an instance of the StyleBuilder class. It provides a chainable API that looks like this:
 
 ```python
-from coloredstrings.color_support import detect_color_support
-print(detect_color_support())
+style.red.on.blue("Hello", "world!")
 ```
 
-**Important methods / properties**
+Put simply: you name the style pieces dot after dot and `StyleBuilder` handles the rest. The final pair of parentheses is a call that styles the given strings (or any sequence of values). Arguments are converted to strings and joined using an optional `sep` argument (which defaults to a single space):
 
-- `style(...)` — apply the composed style to text; accepts `*args`, `sep` and `mode` (explicit `ColorMode`).
-- `style.color_mode(mode: ColorMode)` — return a new `StyleBuilder` that uses the given color mode by default.
-- `style.on` — a *property* that toggles the next color to be applied as a **background** color rather than a foreground. Example:
-  ```py
-  style.red.on.white("text")   # red foreground on white background
-  style.on.white.red("text")   # white background with red foreground is the same if used correctly;
-                               # typical usage is style.red.on.white(...)
+```python
+style.<style1>.[<style2>...](v1, [v2...], sep=' ')
+```
+
+### `style` object
+
+style is an immutable builder object used to construct composite styles and themes. Example:
+
+```python
+from coloredstrings import style
+
+
+```
+
+Because style is immutable, creating a new style from an existing one doesn't modify the original. This avoids accidental cross-contamination of styles presented in `yachalk`:
+
+```python
+from yachalk import chalk
+from coloredstrings import style
+
+# With yachalk 
+s1 = chalk.italic
+s2 = s1.red
+
+print(s1("Am I red?"))
+print(s2("Yes, you are!"))
+
+# With coloredstrings
+s3 = style.italic
+s4 = s3.red
+
+print(s3("Am I still red?"))
+print(s4("Sure not!"))
+```
+
+In this example, `s1/s2` and `s3/s4` behave different: `s1/s2` are actually the same style, while `s3/s4` are truly independent styles.
+
+### Chaining and gotchas
+
+`coloredstrings` - like `yachalk` and several other libraries - is built around chaining styles. Unlike some libraries, it does not provide separate background helpers such as `bg_blue`. Instead, use the `on` helper to mark that the next color in the chain should be a background color. This gives you explicit control over whether the color you add applies to the foreground or the background.
+
+Example:
+
+```python
+from coloredstrings import style
+
+# Red text on a blue background
+print(style.red.on.blue("Hey!"))
+
+# Don't write code like this - it's hard to read!
+# It's equivalent to `style.white.on.black(...)` but much less clear
+print(style.white.on.on.black("Do not write code like that."))
+
+# Green background with default foreground
+print(style.on.green("Text on a green background"))
+```
+
+A few important gotchas:
+
+- If you chain multiple foreground colors, only the last foreground color takes effect:
+
+  ```python
+  print(style.red.green.blue("Blue text")) # result: blue foreground
   ```
 
-**Foreground color builders (properties / methods)**
+- `on` affects only the next color in the chain. For example:
 
-16-color names (properties):
+
+  ```python
+  print(style.on.magenta.cyan("Cyan text on magenta background"))
+  ```
+
+  Here `magenta` becomes the background (because of `on`) and `cyan` is the foreground.
+
+- Repeated calls to `on` without an intervening color are redundant and hurt readability; prefer the simpler, clearer form.
+
+### Supported color modes
+
+`coloredstrings` tries its best to detect terminal color capabilities automatically (see `coloredstrings.color_support.detect_color_support()`), but detection can occasionally miss. You can explicitly set the color mode using the pseudo-style method `color_mode(mode)`.
+
+`mode` is a member of the `coloredstrings.ColorMode` enum with these values:
+- `ColorMode.NO_COLORS` - disable styling; no escape sequences are emitted
+- `ColorMode.ANSI_16` - 16 basic ANSI colors
+- `ColorMode.EXTENDED_256` - 256 color mode
+- `ColorMode.TRUE_COLOR` - 24-bit RGB / truecolor support
+
+Example:
+
+```python
+from coloredstrings import style, ColorMode
+
+# Force no colors
+just_text = style.color_mode(ColorMode.NO_COLORS)
+print(just_text.red("It isn't red"))
+
+# Force truecolor
+rgb_default = style.color_mode(ColorMode.TRUE_COLOR)
+print(rgb_default.hex("#ca7e8d")("Hi!"))
 ```
-black, red, green, yellow, blue, magenta, cyan, white,
-bright_black (aliases: gray, grey),
-bright_red, bright_green, bright_yellow, bright_blue, bright_magenta, bright_cyan, bright_white
-```
 
-Extended / truecolor helpers (callable methods):
-```
-rgb(r, g, b)        # 24-bit RGB foreground
-color256(index)     # 256-color foreground (index clamped to 0..255)
-hex("#RRGGBB"|"RGB"|... )  # hex shorthand supported
-```
+#### `FORCE_COLOR` and `NO_COLOR`
 
-**Background selection**
+`coloredstrings` respects common environment conventions:
 
-Use `.on` together with a color property or method on the `style` object: e.g. `style.red.on.white("text")`, or `style.on.rgb(1,2,3)("text")`.
+- **`NO_COLOR`**: if this environment variable is present (with any value), coloredstrings will avoid emitting color escape sequences. This is the community-standard way for users to opt out of colored output.
 
-**Text attributes**
+- **`FORCE_COLOR`**: if set, this variable can be used to force color output even when detection would otherwise disable it (for example, when output is being piped).
+Following values are supported:
+  - `FORCE_COLOR<=0` - same as `ColorMode.NO_COLOR` or **`NO_COLOR`** environment variable
+  - `FORCE_COLOR=1` - same as `ColorMode.ANSI_16`
+  - `FORCE_COLOR=2` - same as `ColorMode.EXTENDED_256`
+  - `FORCE_COLOR>=3` - same as `ColorMode.TRUE_COLOR`
 
-Properties that add text attributes (they stack; attributes combine instead of overriding):
+You can still programmatically override detection by calling `style.color_mode(...)` as shown above.
 
-```
-bold, dim (aliases: faint, dark),
-italic, underline,
-blink (slow_blink), rapid_blink,
-inverse (alias: reverse),
-hidden (aliases: concealed),
-strike,
-framed, encircle (alias: circle),
-overline, double_underline
-```
+## Fallback behavior
 
-Attribute support varies by terminal. See `types.Attribute` in the source for start/end ANSI codes and short notes on support.
+Many terminals do not support full truecolor (`ColorMode.TRUE_COLOR`). When a requested color cannot be represented in the current color mode, `coloredstrings` automatically maps the requested color into the best available color space and emits the closest supported color. In short: you will still get colored output, though the result may be an approximation of the original color.
 
-**Chaining semantics (summary)**
+## Styles
 
-- Attributes (bold, italic, underline, etc.) stack: calling `.bold.underline` applies both.
-- Foreground/background colors are *mutually exclusive*: the last color-setting operation for foreground replaces previous foreground; same for background.
-- Reapplying the same attribute does not duplicate codes - the builder ensures attributes are applied once.
+### Attributes
+
+- `bold` - Make the text bold (increases weight). Widely supported.
+- `dim` (aliases: `faint`, `dark`) - Render the text with lower intensity / brightness. Support varies.
+- `italic` - Render text in italic. *Support varies across terminals.*
+- `underline` - Draw a horizontal line **below** the text. *Support varies.*
+- `double_underline` - Draw a double underline under the text. *Not widely supported.*
+- `overline` - Draw a horizontal line **above** the text. *Not widely supported.*
+- `inverse` (alias: `reverse`) - Swap foreground and background colors (invert colors).
+- `hidden` (alias: `concealed`) - Do not display the text (it is still present in the output stream).
+- `strike` (alias: `strikethrough`) - Draw a horizontal line through the center of the text. *Support varies.*
+- `blink` (alias: `slow_blink`) - Make the text blink. **Often unsupported** in modern terminals; avoid depending on it.
+- `rapid_blink` - Faster blink. **Often unsupported** in modern terminals; avoid depending on it.
+- `framed` - Draw a frame around the text. *Rarely supported.*
+- `encircle` (alias: `circle`) - Draw a circle/encircle the text. *Rarely supported.*
+- `double_underline` - Same as `underline` but there are two horizontal line instead of one. *Rarely supported.*
+
+> **Note on attributes:** Most attributes stack (they combine instead of overriding). Terminal support for many of these attributes is spotty - prefer basic attributes (`bold`, `underline`, `inverse`) for portability.
+
+### Colors (both foreground and background)
+
+- `black`
+- `red`
+- `green`
+- `yellow`
+- `blue`
+- `magenta`
+- `cyan`
+- `white`
+- `gray`
+- `bright_red`
+- `bright_green`
+- `bright_yellow`
+- `bright_blue`
+- `bright_magenta`
+- `bright_cyan`
+- `bright_white`
+- `color256(index)` - 256 color
+- `rgb(r, g, b)`, `hex(color_code)` - 24-bit RGB color
 
 ---
 
-## Isn't patching `str` un‑Pythonic?
+## Experimental patching of `str`
 
-Some time ago I was inspired by the Rust crate [text-colorizer](https://crates.io/crates/text-colorizer) — ergonomic, expressive, and pleasant to type. I later discovered [colors](https://github.com/Marak/colors.js) which uses a similar API. I couldn't find anything like that in Python, so I implemented this approach.
+> [!WARNING] 
+> Patching builtins is controversial and can feel un-Pythonic. This feature is intentionally opt-in and scoped; it is not enabled by default.
 
-Patching builtins is controversial and can look un‑Pythonic. Libraries like `colorama` require you to compose ANSI sequences manually:
+This package offers an optional, experimental feature that temporarily adds style methods to Python's built-in str type so you can write colorized literals like "error:".red. 
 
-```python
-from colorama import Fore, Style
+The patching feature is provided as a context manager and as a decorator. Both variants temporarily add style methods to `str` for the duration of the context or the decorated function. Methods are removed when the context exits or after the decorated function returns.
 
-print(Fore.RED + "error: " + Style.RESET_ALL + "something went wrong")
-```
-
-This works, but it adds visual noise (constants, concatenation, and manual resets). `termcolor` provides a simpler function-based API:
-
-```python
-from termcolor import colored
-
-print(colored("error:", "red"), "something went wrong")
-```
-
-`coloredstrings` takes a different approach: colors and styles are first-class, readable operations on values. If you enable the optional patching feature, you can also write styles directly on string literals inside a restricted context:
+Example using the context manager:
 
 ```python
 from coloredstrings.patch import colored_strings
 
-# colored_strings() is a context manager that
-# temporarily adds style methods to str
 with colored_strings():
+    # style methods (like .red, .green.bold, etc.) are available on all string literals here
     print("error:".red, "something went wrong")
+```
 
-# colored_strings() is also a decorator with same mechanics:
-# style methods are only available inside the `hello` function
+Example using the decorator:
+
+```python
+from coloredstrings.patch import colored_strings
+
 @colored_strings
 def hello():
+    # style methods are available only inside this function
     print("Hello, World!".green.bold.on_white)
 ```
 
-This reads more like natural prose and keeps color usage scoped to the values that need it. Maybe it's not for everyone (and because of that the `style` object exists), but it's pleasant to type.
+### Implementation notes & caveats
 
----
-
-## Limitations
-
-Under the hood `coloredstrings[patched]` uses `forbiddenfruit` package, as a result it also has the same limitations:
-
-> Forbbiden Fruit is tested on CPython 3.7-3.13.
-> Since Forbidden Fruit is fundamentally dependent on the C API, this library won't work on other python implementations, such as Jython, pypy, etc.
+- Relies on a library that touches CPython internals - **CPython-only**; may not work on PyPy, Jython, etc.
+- Patching is temporary and scoped (not global), lowering the risk of surprising behavior in larger apps.
+- Because it alters builtins while active, **don’t enable it inside libraries or long-lived frameworks** - use `style`.
+- **Best for REPLs, short scripts, demos, or developer-facing tooling** where ergonomic syntax matters.
+- The patched API differs from `style`: there’s no `on` method - background helpers are provided as mirrored methods (e.g. `on_green`, `on_rgb`, etc.).
 
 ---
 
