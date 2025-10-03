@@ -130,14 +130,7 @@ style.<style1>.[<style2>...](v1, [v2...], sep=' ')
 
 ### `style` object
 
-`style` is an immutable builder object used to construct composite styles and themes. Example:
-
-```python
-from coloredstrings import style
-
-
-```
-
+`style` is an immutable builder object used to construct composite styles and themes.
 Because style is immutable, creating a new style from an existing one doesn't modify the original. This avoids accidental cross-contamination of styles presented in `yachalk`:
 
 ```python
