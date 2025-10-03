@@ -57,15 +57,14 @@ Latest development version:
 pip install git+https://github.com/samedit66/coloredstrings.git
 ```
 
-### Optional: enable the experimental `str`-patching feature
+### "Patched" version
 
-The package includes an experimental feature that patches Python's built-in `str` type so you can call style methods directly on string literals (for example, `"text".red`). This is not enabled by default. To install the optional patched build, run:
+Experimental feature that patches `str` so you can call style methods on literals (e.g. "text".red). Not enabled by default; CPython-only.
+
 
 ```bash
 pip install "coloredstrings[patched]"
 ```
-
-This extra depends on the `forbiddenfruit` package to attach methods to `str` at runtime — see **Limitations** below.
 
 ---
 
@@ -85,21 +84,13 @@ from coloredstrings import style
 print(style.bold.underline.red("Error:"), "Something went wrong.")
 print(style.blue.bold("Info:"), "Everything is OK")
 print(style.italic.green("Success!"))
-```
 
-Multi-argument and separator support:
-
-```python
-# style(...) accepts multiple arguments (stringable values) and a `sep` argument like `print`:
+# style(...) accepts multiple arguments and a `sep` argument like `print`:
 print(style.green("That's", "great!"))
 print(style.blue(1, 3.14, True, sep=", "))
-```
 
-Nesting and combining styles:
-
-```python
+# Nesting and combining styles:
 print(style.red(f"Hello {style.underline.on.blue('world')}!"))
-
 print(
     style.green(
         "I am a green line " +
@@ -107,19 +98,13 @@ print(
         " that becomes green again!"
     )
 )
-```
 
-24-bit RGB / hex and 256-color:
-
-```python
+# 24-bit RGB / hex and 256-color:
 print(style.rgb(123, 45, 200)("custom"))
 print(style.hex("#aabbcc")("hex is also supported"))
 print(style.color256(37)("256-color example"))
-```
 
-Define theme helpers:
-
-```python
+# Define theme helpers:
 error = style.bold.red
 warning = style.hex("#FFA500")
 
