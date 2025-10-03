@@ -29,7 +29,7 @@ print(style.italic.green("Success!"))
 
 ---
 
-## Features
+## Features🔥
 
 - No dependencies
 - Composing styles in a chainable way
@@ -37,8 +37,9 @@ print(style.italic.green("Success!"))
 - [`NO_COLOR`](https://no-color.org/) & `FORCE_COLOR` support
 - Support for 16-color, 256-color, and 24-bit (truecolor / RGB / hex) modes
 - Auto-detection of terminal color capabilities
+- Automatically fall back to the nearest supported color if the requested color isn't supported
 - Friendly auto-complete API
-- Ability to call style methods on strings directly (with some [black magic](https://github.com/clarete/forbiddenfruit) help)
+- Optional ability to call style methods on strings directly (with some [black magic](https://github.com/clarete/forbiddenfruit) help)
 
 ---
 
