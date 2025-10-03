@@ -22,7 +22,7 @@ def detect_color_support(stream: typing.TextIO = sys.stdout) -> types.ColorMode:
      - fallback -> NO_COLOR
     """
     # 0) https://no-color.org/
-    if os.environ.get("NO_COLOR"):
+    if os.environ.get("NO_COLOR") is not None:
         return types.ColorMode.NO_COLOR
 
     # 1) explicit override
