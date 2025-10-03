@@ -189,6 +189,10 @@ class StyleBuilder:
         return self._with_attrs(types.Attribute.STRIKE)
 
     @property
+    def strikethrough(self):
+        return self.strike
+
+    @property
     def framed(self) -> StyleBuilder:
         return self._with_attrs(types.Attribute.FRAMED)
 
