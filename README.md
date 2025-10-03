@@ -116,7 +116,7 @@ print(warning("Warning!"))
 
 ## Usage
 
-All you need to use (mostly) is the global style object - an instance of the StyleBuilder class. It provides a chainable API that looks like this:
+All you need to use (mostly) is the global `style` object - an instance of the `StyleBuilder` class. It provides a chainable API that looks like this:
 
 ```python
 style.red.on.blue("Hello", "world!")
@@ -130,7 +130,7 @@ style.<style1>.[<style2>...](v1, [v2...], sep=' ')
 
 ### `style` object
 
-style is an immutable builder object used to construct composite styles and themes. Example:
+`style` is an immutable builder object used to construct composite styles and themes. Example:
 
 ```python
 from coloredstrings import style
@@ -274,7 +274,7 @@ Many terminals do not support full truecolor (`ColorMode.TRUE_COLOR`). When a re
 - `magenta`
 - `cyan`
 - `white`
-- `gray`
+- `bright_black` (aliases: `gray`, `grey`)
 - `bright_red`
 - `bright_green`
 - `bright_yellow`
@@ -292,7 +292,11 @@ Many terminals do not support full truecolor (`ColorMode.TRUE_COLOR`). When a re
 > [!WARNING] 
 > Patching builtins is controversial and can feel un-Pythonic. This feature is intentionally opt-in and scoped; it is not enabled by default.
 
-This package offers an optional, experimental feature that temporarily adds style methods to Python's built-in str type so you can write colorized literals like "error:".red. 
+```bash
+pip install "coloredstrings[patched]"
+```
+
+This package offers an optional, experimental feature that temporarily adds style methods to Python's built-in str type so you can write colorized literals like `"error:".red`. 
 
 The patching feature is provided as a context manager and as a decorator. Both variants temporarily add style methods to `str` for the duration of the context or the decorated function. Methods are removed when the context exits or after the decorated function returns.
 
