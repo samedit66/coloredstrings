@@ -25,8 +25,6 @@ print(style.blue.bold("Info:"), "Everything is OK")
 print(style.italic.green("Success!"))
 ```
 
-![Colored examples](https://github.com/samedit66/coloredstrings/blob/main/media/example_1.png?raw=true)
-
 ---
 
 ## Features🔥
@@ -59,7 +57,7 @@ pip install git+https://github.com/samedit66/coloredstrings.git
 
 ### "Patched" version
 
-Experimental feature that patches `str` so you can call style methods on literals (e.g. "text".red). Not enabled by default; CPython-only.
+Experimental feature that patches `str` so you can call style methods on literals (e.g. `"text".red`). Not enabled by default; **CPython-only**.
 
 
 ```bash
@@ -141,15 +139,18 @@ from coloredstrings import style
 s1 = chalk.italic
 s2 = s1.red
 
-print(s1("Am I red?"))
+print(s1("Chalk, am I red?"))
 print(s2("Yes, you are!"))
+
+print("-" * 8)
 
 # With coloredstrings
 s3 = style.italic
 s4 = s3.red
 
-print(s3("Am I still red?"))
-print(s4("Sure not!"))
+print(s3("Style, am I still red?"))
+print(s4("Sure not, but I am!"))
+
 ```
 
 In this example, `s1/s2` and `s3/s4` behave different: `s1/s2` are actually the same style, while `s3/s4` are truly independent styles.
@@ -253,7 +254,6 @@ Many terminals do not support full truecolor (`ColorMode.TRUE_COLOR`). When a re
 - `rapid_blink` - Faster blink. **Often unsupported** in modern terminals; avoid depending on it.
 - `framed` - Draw a frame around the text. *Rarely supported.*
 - `encircle` (alias: `circle`) - Draw a circle/encircle the text. *Rarely supported.*
-- `double_underline` - Same as `underline` but there are two horizontal line instead of one. *Rarely supported.*
 
 > **Note on attributes:** Most attributes stack (they combine instead of overriding). Terminal support for many of these attributes is spotty - prefer basic attributes (`bold`, `underline`, `inverse`) for portability.
 
@@ -316,7 +316,7 @@ def hello():
 
 ### Implementation notes & caveats
 
-- Relies on a library that touches CPython internals - **CPython-only**; may not work on PyPy, Jython, etc.
+- Relies on [`forbiddenfruit`]() that touches CPython internals - **CPython-only**; may not work on PyPy, Jython, etc.
 - Patching is temporary and scoped (not global), lowering the risk of surprising behavior in larger apps.
 - Because it alters builtins while active, **don’t enable it inside libraries or long-lived frameworks** - use `style`.
 - **Best for REPLs, short scripts, demos, or developer-facing tooling** where ergonomic syntax matters.
