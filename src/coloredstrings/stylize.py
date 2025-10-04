@@ -61,7 +61,7 @@ def code_pair(
     style: typing.Union[types.Attribute, types.Color],
     is_bg: bool = False,
     mode: types.ColorMode = types.ColorMode.EXTENDED_256,
-) -> typing.Tuple[str, str]:
+) -> types.CodePair:
     assert mode != types.ColorMode.NO_COLOR
 
     if isinstance(style, types.Attribute):
@@ -73,7 +73,7 @@ def code_pair(
     prefix = "48" if is_bg else "38"
 
     if isinstance(style, types.Ansi16Color):
-        code = (style.as_bg() if is_bg else style.value).start
+        code = str((style.as_bg() if is_bg else style.value).start)
 
     elif isinstance(style, types.Extended256):
         if mode == types.ColorMode.ANSI_16:

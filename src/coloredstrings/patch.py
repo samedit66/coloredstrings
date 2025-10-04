@@ -2,17 +2,9 @@ import contextlib
 import typing
 import functools
 import itertools
+import importlib.util
 
-from coloredstrings import (
-    stylize,
-    types,
-    style_builder,
-)
-
-
-try:
-    import forbiddenfruit as ff
-except Exception as exc:
+if not importlib.util.find_spec("forbiddenfruit"):
     raise ImportError(
         "'forbiddenfruit' is required to enable chaining on "
         'str objects (e.g. "Hello".blue.on.green).\n\n'
@@ -20,7 +12,15 @@ except Exception as exc:
         "- pip install forbiddenfruit\n"
         "- uv add forbiddenfruit\n"
         "- or install the patched bundle: pip install 'coloredstrings[patched]'\n\n"
-    ) from exc
+    )
+import forbiddenfruit as ff  # type: ignore
+
+from coloredstrings import (
+    color_support,
+    stylize,
+    types,
+    style_builder,
+)
 
 
 def _apply(
@@ -30,7 +30,13 @@ def _apply(
     bg: typing.Optional[types.Color] = None,
     attrs: typing.Iterable[types.Attribute] = (),
 ) -> str:
-    return stylize.stylize(self, None, fg, bg, attrs)
+    return stylize.stylize(
+        self,
+        color_support.detect_color_support(),
+        fg,
+        bg,
+        attrs,
+    )
 
 
 # Attribute painters
