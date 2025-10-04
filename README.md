@@ -25,6 +25,8 @@ print(style.blue.bold("Info:"), "Everything is OK")
 print(style.italic.green("Success!"))
 ```
 
+![preview image](https://github.com/samedit66/coloredstrings/blob/main/media/preview.png?raw=true)
+
 ---
 
 ## Features🔥
