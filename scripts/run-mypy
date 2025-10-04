@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# scripts/run-mypy
+# Install the package into the current Python environment, then run mypy
+# - designed to be run inside the pre-commit-created venv (or your dev venv)
+
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+# Use python -m pip to be robust against PATH oddities.
+# Install editable package into the hook venv so mypy can import the package
+# and check uses of third-party dependencies (if any).
+# - quiet + no-deps reduces noise; remove --no-deps if you need deps installed.
+python -m pip install --disable-pip-version-check --quiet --editable .
+
+# Run mypy on the package name (not on 'src'), so we get canonical module mapping.
+# Use the project's pyproject.toml for configuration (mypy will read it).
+# Show error codes to make debugging easier.
+mypy --config-file=pyproject.toml --package coloredstrings --show-error-codes
