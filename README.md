@@ -6,6 +6,7 @@
 [![Supported Python versions](https://img.shields.io/pypi/pyversions/coloredstrings.svg?logo=python&logoColor=FFE873)](https://pypi.org/project/coloredstrings)
 [![Licence](https://img.shields.io/github/license/samedit66/coloredstrings.svg)](COPYING.txt)
 [![Code style: Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](https://mypy-lang.org/)
 
 <div align="center">
   <p><em>Do more. Type less. Colorize different.</em></p>
