@@ -153,6 +153,8 @@ print(s4("Sure not, but I am!"))
 
 ```
 
+![yachalk bug image](https://github.com/samedit66/coloredstrings/blob/main/media/yachalk_bug.png?raw=true)
+
 In this example, `s1/s2` and `s3/s4` behave different: `s1/s2` are actually the same style, while `s3/s4` are truly independent styles.
 
 ### Chaining and gotchas
