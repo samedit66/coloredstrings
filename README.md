@@ -138,7 +138,7 @@ Because style is immutable, creating a new style from an existing one doesn't mo
 from yachalk import chalk
 from coloredstrings import style
 
-# With yachalk 
+# With yachalk
 s1 = chalk.italic
 s2 = s1.red
 
@@ -287,14 +287,14 @@ Many terminals do not support full truecolor (`ColorMode.TRUE_COLOR`). When a re
 
 ## Experimental patching of `str`
 
-> [!WARNING] 
+> [!WARNING]
 > Patching builtins is controversial and can feel un-Pythonic. This feature is intentionally opt-in and scoped; it is not enabled by default.
 
 ```bash
 pip install "coloredstrings[patched]"
 ```
 
-This package offers an optional, experimental feature that temporarily adds style methods to Python's built-in str type so you can write colorized literals like `"error:".red`. 
+This package offers an optional, experimental feature that temporarily adds style methods to Python's built-in str type so you can write colorized literals like `"error:".red`.
 
 The patching feature is provided as a context manager and as a decorator. Both variants temporarily add style methods to `str` for the duration of the context or the decorated function. Methods are removed when the context exits or after the decorated function returns.
 
