@@ -53,3 +53,8 @@ dev = [
 patched = [
     "forbiddenfruit>=0.1.4",
 ]
+
+[tool.mypy]
+python_version = 3.9
+mypy_path = ["src"]
+files = ["src"]
