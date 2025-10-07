@@ -25,6 +25,9 @@ def stylize(
     if mode == types.ColorMode.NO_COLOR:
         return text
 
+    if len(text) == 0:
+        return text
+
     pairs = []
     if fg is not None:
         pairs.append(code_pair(fg, is_bg=False, mode=mode))

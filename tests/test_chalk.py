@@ -14,6 +14,10 @@ def style() -> StyleBuilder:
     return StyleBuilder(default_mode=ColorMode.ANSI_16)
 
 
+def test_empty_str(style: StyleBuilder) -> None:
+    assert style.red("") == ""
+
+
 def test_basics(style: StyleBuilder) -> None:
     # attributes (ANSI 16 mode for deterministic codes)
     assert r(style.bold("foo", mode=ColorMode.ANSI_16)) == r("\x1b[1mfoo\x1b[22m")

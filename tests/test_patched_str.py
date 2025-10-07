@@ -1,20 +1,25 @@
-import pytest
-
+import os
+import sys
+import unittest
 import importlib.util
 
 if not importlib.util.find_spec("forbiddenfruit"):
     pytest.skip("forbiddenfruit is not installed", allow_module_level=True)
 
+import pytest
+
+
 from coloredstrings.patch import (
     patch_strings,
     unpatch_strings,
     colored_strings,
+    color_support,
 )
 
 
 def test_empty_string():
     with colored_strings():
-        assert "".red == "\033[31m\033[39m"
+        assert "".red == ""
 
 
 def test_context_manager_basic_color():
