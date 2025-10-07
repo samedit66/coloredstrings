@@ -14,6 +14,7 @@ class Attribute(enum.Enum):
     ANSI escape codes for text attributes.
     Support for these attributes varies across terminals.
 
+    RESET: Widely supported.
     BOLD: Widely supported.
     DIM: Generally supported, sometimes appears as bold or not supported on older terminals.
     ITALIC: Support varies; many terminals do not render italics.
@@ -29,6 +30,7 @@ class Attribute(enum.Enum):
     OVERLINE: Support varies; less common.
     """
 
+    RESET = Ansi16Code(0, 0)
     BOLD = Ansi16Code(1, 22)
     DIM = Ansi16Code(2, 22)
     ITALIC = Ansi16Code(3, 23)

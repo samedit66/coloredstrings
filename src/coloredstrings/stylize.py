@@ -27,7 +27,12 @@ def stylize(
         if visible_if_colors:
             return ""
 
-        return text
+        # Special case of reset - even when no text is passed,
+        # stylize still must return \x1b0m.
+        # This behavior follows `ansis`:
+        # https://github.com/webdiscus/ansis/tree/master?tab=readme-ov-file#edge-cases-input-arguments
+        if types.Attribute.RESET not in attrs:
+            return text
 
     pairs = []
     if fg is not None:
@@ -69,6 +74,9 @@ def code_pair(
     assert mode != types.ColorMode.NO_COLOR
 
     if isinstance(style, types.Attribute):
+        if style == types.Attribute.RESET:
+            return types.CodePair(start=f"{_ESC}0m", end="")
+
         return types.CodePair(
             start=f"{_ESC}{style.value.start}m",
             end=f"{_ESC}{style.value.end}m",

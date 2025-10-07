@@ -236,6 +236,7 @@ Many terminals do not support full truecolor (`ColorMode.TRUE_COLOR`). When a re
 
 ### Attributes
 
+- `reset` - Reset the current style chain. Widely supported.
 - `bold` - Make the text bold (increases weight). Widely supported.
 - `dim` (aliases: `faint`, `dark`) - Render the text with lower intensity / brightness. Support varies.
 - `italic` - Render text in italic. *Support varies across terminals.*

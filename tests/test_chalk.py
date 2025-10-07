@@ -31,6 +31,10 @@ def test_visible(style: StyleBuilder) -> None:
     assert r(no_colors.red.visible("foo")) == r("")
 
 
+def test_reset(style: StyleBuilder) -> None:
+    assert style.reset() == "\x1b[0m"
+
+
 def test_basics(style: StyleBuilder) -> None:
     # attributes (ANSI 16 mode for deterministic codes)
     assert r(style.bold("foo", mode=ColorMode.ANSI_16)) == r("\x1b[1mfoo\x1b[22m")

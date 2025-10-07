@@ -137,6 +137,10 @@ class StyleBuilder:
         return self._with_color(rgb_from_hex(color_code))
 
     @property
+    def reset(self) -> StyleBuilder:
+        return self._with_attrs(types.Attribute.RESET)
+
+    @property
     def bold(self) -> StyleBuilder:
         return self._with_attrs(types.Attribute.BOLD)
 
