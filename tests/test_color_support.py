@@ -230,3 +230,14 @@ def test_detect_color_support__colorterm() -> None:
 @mock.patch("sys.stdout.isatty", lambda: True)
 def test_detect_color_support__fall_back_to_no_colors_without_any_indicators() -> None:
     assert detect_color_support(sys.stdout) == ColorMode.NO_COLOR
+
+
+@mock.patch.dict(os.environ, {"CLICOLOR_FORCE": "1"}, clear=True)
+def test_detect_color_support__respect_clicolor_force() -> None:
+    assert detect_color_support() == ColorMode.ANSI_16
+
+
+@mock.patch.dict(os.environ, {"CLICOLOR": "1"}, clear=True)
+@mock.patch("sys.stdout.isatty", lambda: True)
+def test_detect_color_support__respect_clicolor() -> None:
+    assert detect_color_support() == ColorMode.ANSI_16

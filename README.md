@@ -35,7 +35,7 @@ print(style.italic.green("Success!"))
 - No dependencies
 - Composing styles in a chainable way
 - Nested colors and no nested styling bug
-- [`NO_COLOR`](https://no-color.org/) & [`FORCE_COLOR`](https://force-color.org/) support
+- [`FORCE_COLOR`](https://force-color.org/), [`NO_COLOR`](https://no-color.org/), [`CLICOLOR_FORCE`&`CLICOLOR`](https://bixense.com/clicolors/)  support
 - Support for 16-color, 256-color, and 24-bit (truecolor / RGB / hex) modes
 - Auto-detection of terminal color capabilities
 - Automatically fall back to the nearest supported color if the requested color isn't supported
@@ -213,18 +213,22 @@ rgb_default = style.color_mode(ColorMode.TRUE_COLOR)
 print(rgb_default.hex("#ca7e8d")("Hi!"))
 ```
 
-#### `FORCE_COLOR` and `NO_COLOR`
+#### `FORCE_COLOR`, `NO_COLOR`, `CLICOLOR_FORCE` and `CLICOLOR`
 
-`coloredstrings` respects common environment conventions:
+With a wide variety of options to force terminal color or not, `coloredstrings` respects common environment conventions (in order of precedence - higher precedence goes first):
 
-- **`NO_COLOR`**: if this environment variable is present (with any value), coloredstrings will avoid emitting color escape sequences. This is the community-standard way for users to opt out of colored output.
-
-- **`FORCE_COLOR`**: if set, this variable can be used to force color output even when detection would otherwise disable it (for example, when output is being piped).
+- **`FORCE_COLOR`** or : if set, this variable can be used to force color output even when detection would otherwise disable it (for example, when output is being piped).
 Following values are supported:
   - `FORCE_COLOR<=0` - same as `ColorMode.NO_COLOR` or **`NO_COLOR`** environment variable
   - `FORCE_COLOR=1` - same as `ColorMode.ANSI_16`
   - `FORCE_COLOR=2` - same as `ColorMode.EXTENDED_256`
   - `FORCE_COLOR>=3` - same as `ColorMode.TRUE_COLOR`
+
+- **`NO_COLOR`**: if this environment variable is present (with any value beside empty string), coloredstrings will avoid emitting color escape sequences. This is the community-standard way for users to opt out of colored output.
+
+- **`CLICOLOR_FORCE`**: same as `FORCE_COLOR`.
+
+- **`CLICOLOR`**: same as `ColorMode.ANSI_16`.
 
 You can still programmatically override detection by calling `style.color_mode(...)` as shown above.
 
