@@ -12,8 +12,8 @@ def detect_color_support(stream: typing.TextIO = sys.stdout) -> types.ColorMode:
     Detect the best ColorMode available for the given stream and environment.
 
     The function tries, in order:
+     - FORCE_COLOR environment variable
      - NO_COLOR environment variable
-     - explicit FORCE_COLOR environment override
      - TERM == "dumb" => NO_COLOR
      - Windows version heuristics
      - CI / TEAMCITY heuristics
@@ -21,14 +21,14 @@ def detect_color_support(stream: typing.TextIO = sys.stdout) -> types.ColorMode:
      - COLORTERM / TERM_PROGRAM / TERM heuristics
      - fallback -> NO_COLOR
     """
-    # 0) https://no-color.org/
-    if os.environ.get("NO_COLOR") is not None:
-        return types.ColorMode.NO_COLOR
-
-    # 1) explicit override
+    # 0) explicit override
     forced = _get_env_force_color()
     if forced is not None:
         return forced
+
+    # 1) https://no-color.org/
+    if os.environ.get("NO_COLOR") is not None:
+        return types.ColorMode.NO_COLOR
 
     # 2) quick checks
     if os.environ.get("TERM", "").lower() == "dumb":
