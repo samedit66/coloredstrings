@@ -40,7 +40,6 @@ print(style.italic.green("Success!"))
 - Auto-detection of terminal color capabilities
 - Automatically fall back to the nearest supported color if the requested color isn't supported
 - Friendly auto-complete API
-- Optional ability to call style methods on strings directly (with some [black magic](https://github.com/clarete/forbiddenfruit) help)
 
 ---
 
@@ -56,15 +55,6 @@ Latest development version:
 
 ```bash
 pip install git+https://github.com/samedit66/coloredstrings.git
-```
-
-### "Patched" version
-
-Experimental feature that patches `str` so you can call style methods on literals (e.g. `"text".red`). Not enabled by default; **CPython-only**.
-
-
-```bash
-pip install "coloredstrings[patched]"
 ```
 
 ---
@@ -282,50 +272,6 @@ Many terminals do not support full truecolor (`ColorMode.TRUE_COLOR`). When a re
 - `bright_white`
 - `color256(index)` - 256 color
 - `rgb(r, g, b)`, `hex(color_code)` - 24-bit RGB color
-
----
-
-## Experimental patching of `str`
-
-> [!WARNING]
-> Patching builtins is controversial and can feel un-Pythonic. This feature is intentionally opt-in and scoped; it is not enabled by default.
-
-```bash
-pip install "coloredstrings[patched]"
-```
-
-This package offers an optional, experimental feature that temporarily adds style methods to Python's built-in str type so you can write colorized literals like `"error:".red`.
-
-The patching feature is provided as a context manager and as a decorator. Both variants temporarily add style methods to `str` for the duration of the context or the decorated function. Methods are removed when the context exits or after the decorated function returns.
-
-Example using the context manager:
-
-```python
-from coloredstrings.patch import colored_strings
-
-with colored_strings():
-    # style methods (like .red, .green.bold, etc.) are available on all string literals here
-    print("error:".red, "something went wrong")
-```
-
-Example using the decorator:
-
-```python
-from coloredstrings.patch import colored_strings
-
-@colored_strings
-def hello():
-    # style methods are available only inside this function
-    print("Hello, World!".green.bold.on_white)
-```
-
-### Implementation notes & caveats
-
-- Relies on [`forbiddenfruit`](https://github.com/clarete/forbiddenfruit) that touches CPython internals - **CPython-only**; may not work on PyPy, Jython, etc.
-- Patching is temporary and scoped (not global), lowering the risk of surprising behavior in larger apps.
-- Because it alters builtins while active, **don’t enable it inside libraries or long-lived frameworks** - use `style`.
-- **Best for REPLs, short scripts, demos, or developer-facing tooling** where ergonomic syntax matters.
-- The patched API differs from `style`: there’s no `on` method - background helpers are provided as mirrored methods (e.g. `on_green`, `on_rgb`, etc.).
 
 ---
 
