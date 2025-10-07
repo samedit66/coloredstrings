@@ -27,7 +27,8 @@ def detect_color_support(stream: typing.TextIO = sys.stdout) -> types.ColorMode:
         return forced
 
     # 1) https://no-color.org/
-    if os.environ.get("NO_COLOR") is not None:
+    no_color = os.environ.get("NO_COLOR")
+    if no_color is not None and len(no_color) != 0:
         return types.ColorMode.NO_COLOR
 
     # 2) quick checks
