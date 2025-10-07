@@ -1,6 +1,3 @@
-import os
-import sys
-import unittest
 import importlib.util
 
 if not importlib.util.find_spec("forbiddenfruit"):
@@ -13,7 +10,6 @@ from coloredstrings.patch import (
     patch_strings,
     unpatch_strings,
     colored_strings,
-    color_support,
 )
 
 
