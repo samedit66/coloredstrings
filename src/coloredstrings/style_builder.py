@@ -16,14 +16,14 @@ class StyleBuilder:
         fg: typing.Optional[types.Color] = None,
         bg: typing.Optional[types.Color] = None,
         attrs: typing.Iterable[types.Attribute] = (),
-        on: bool = False,
-        default_mode: typing.Optional[types.ColorMode] = None,
+        next_color_for_bg: bool = False,
+        mode: typing.Optional[types.ColorMode] = None,
     ) -> None:
         self.fg = fg
         self.bg = bg
         self.attrs = frozenset(attrs)
-        self._on = on
-        self._default_mode = default_mode
+        self.next_color_for_bg = next_color_for_bg
+        self.mode = mode
 
     def __call__(
         self,
@@ -32,8 +32,8 @@ class StyleBuilder:
         mode: typing.Optional[types.ColorMode] = None,
     ) -> str:
         if mode is None:
-            if self._default_mode is not None:
-                mode = self._default_mode
+            if self.mode is not None:
+                mode = self.mode
             else:
                 mode = color_support.detect_color_support()
 
@@ -45,11 +45,11 @@ class StyleBuilder:
         return stylize.stylize(text, mode, self.fg, self.bg, self.attrs)
 
     def color_mode(self, mode: types.ColorMode) -> StyleBuilder:
-        return StyleBuilder(self.fg, self.bg, self.attrs, self._on, mode)
+        return StyleBuilder(self.fg, self.bg, self.attrs, self.next_color_for_bg, mode)
 
     @property
     def on(self) -> StyleBuilder:
-        return StyleBuilder(self.fg, self.bg, self.attrs, True, self._default_mode)
+        return StyleBuilder(self.fg, self.bg, self.attrs, True, self.mode)
 
     @property
     def black(self) -> StyleBuilder:
@@ -213,18 +213,20 @@ class StyleBuilder:
         return self._with_attrs(types.Attribute.DOUBLE_UNDERLINE)
 
     def __repr__(self) -> str:
-        return f"StyleBuilder(fg={self.fg!r}, bg={self.bg!r}, attrs={set(self.attrs)!r}, on={self._on})"
+        return f"StyleBuilder(fg={self.fg!r}, bg={self.bg!r}, attrs={set(self.attrs)!r}, on={self.next_color_for_bg})"
 
     def _with_attrs(self, *attrs: types.Attribute) -> StyleBuilder:
         new_attrs = self.attrs.union(attrs)
-        return StyleBuilder(self.fg, self.bg, new_attrs, self._on, self._default_mode)
+        return StyleBuilder(
+            self.fg, self.bg, new_attrs, self.next_color_for_bg, self.mode
+        )
 
     def _with_color(
         self, color: typing.Union[types.Ansi16Color, types.Extended256, types.Rgb]
     ) -> StyleBuilder:
         fg = self.fg
         bg = self.bg
-        on_flag = self._on
+        on_flag = self.next_color_for_bg
 
         if on_flag:
             bg = color
@@ -232,7 +234,7 @@ class StyleBuilder:
         else:
             fg = color
 
-        return StyleBuilder(fg, bg, self.attrs, on_flag, self._default_mode)
+        return StyleBuilder(fg, bg, self.attrs, on_flag, self.mode)
 
 
 def rgb_from_hex(hex_code: str) -> types.Rgb:

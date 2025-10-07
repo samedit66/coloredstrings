@@ -11,7 +11,7 @@ from helper import r
 
 @pytest.fixture
 def style() -> StyleBuilder:
-    return StyleBuilder(default_mode=ColorMode.ANSI_16)
+    return StyleBuilder(mode=ColorMode.ANSI_16)
 
 
 def test_empty_str(style: StyleBuilder) -> None:
@@ -111,7 +111,7 @@ def test_basics(style: StyleBuilder) -> None:
 
 def test_rgb_hex() -> None:
     # True color
-    style = StyleBuilder(default_mode=ColorMode.TRUE_COLOR)
+    style = StyleBuilder(mode=ColorMode.TRUE_COLOR)
     assert r(style.rgb(20, 40, 60)("foo", mode=ColorMode.TRUE_COLOR)) == r(
         "\x1b[38;2;20;40;60mfoo\x1b[39m"
     )
@@ -164,7 +164,7 @@ def test_rgb_hex() -> None:
 
 
 def test_disabled_mode() -> None:
-    style = StyleBuilder(default_mode=ColorMode.NO_COLOR)
+    style = StyleBuilder(mode=ColorMode.NO_COLOR)
     assert r(style.black("foo")) == r("foo")
 
 
