@@ -18,12 +18,14 @@ class StyleBuilder:
         attrs: typing.Iterable[types.Attribute] = (),
         next_color_for_bg: bool = False,
         mode: typing.Optional[types.ColorMode] = None,
+        empty_if_not_visible: bool = False,
     ) -> None:
         self.fg = fg
         self.bg = bg
         self.attrs = frozenset(attrs)
         self.next_color_for_bg = next_color_for_bg
         self.mode = mode
+        self.empty_if_not_visible = empty_if_not_visible
 
     def __call__(
         self,
@@ -211,6 +213,12 @@ class StyleBuilder:
     @property
     def double_underline(self) -> StyleBuilder:
         return self._with_attrs(types.Attribute.DOUBLE_UNDERLINE)
+
+    @property
+    def visible(self) -> StyleBuilder:
+        return StyleBuilder(
+            self.fg, self.bg, self.attrs, self.next_color_for_bg, self.mode, True
+        )
 
     def __repr__(self) -> str:
         return f"StyleBuilder(fg={self.fg!r}, bg={self.bg!r}, attrs={set(self.attrs)!r}, on={self.next_color_for_bg})"

@@ -22,10 +22,7 @@ def stylize(
     bg: typing.Optional[types.Color] = None,
     attrs: typing.Iterable[types.Attribute] = (),
 ) -> str:
-    if mode == types.ColorMode.NO_COLOR:
-        return text
-
-    if len(text) == 0:
+    if mode == types.ColorMode.NO_COLOR or len(text) == 0:
         return text
 
     pairs = []
