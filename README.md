@@ -249,6 +249,7 @@ Many terminals do not support full truecolor (`ColorMode.TRUE_COLOR`). When a re
 - `rapid_blink` - Faster blink. **Often unsupported** in modern terminals; avoid depending on it.
 - `framed` - Draw a frame around the text. *Rarely supported.*
 - `encircle` (alias: `circle`) - Draw a circle/encircle the text. *Rarely supported.*
+- `visible` - Show text only when a color mode is enabled (anything other than `ColorMode.NO_COLOR`). Mainly used for cosmetic things.
 
 > **Note on attributes:** Most attributes stack (they combine instead of overriding). Terminal support for many of these attributes is spotty - prefer basic attributes (`bold`, `underline`, `inverse`) for portability.
 

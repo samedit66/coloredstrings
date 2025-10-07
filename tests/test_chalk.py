@@ -18,6 +18,19 @@ def test_empty_str(style: StyleBuilder) -> None:
     assert style.red("") == ""
 
 
+def test_visible(style: StyleBuilder) -> None:
+    # When visible and some colors are enabled, return just the text
+    assert r(style.visible("foo", mode=ColorMode.ANSI_16)) == r("foo")
+    assert r(style.red.visible("foo", mode=ColorMode.ANSI_16)) == r(
+        "\x1b[31mfoo\x1b[39m"
+    )
+
+    # When no colors are enabled and the text is marked as visible, nothing is returned
+    no_colors = style.color_mode(mode=ColorMode.NO_COLOR)
+    assert r(no_colors.visible("foo")) == r("")
+    assert r(no_colors.red.visible("foo")) == r("")
+
+
 def test_basics(style: StyleBuilder) -> None:
     # attributes (ANSI 16 mode for deterministic codes)
     assert r(style.bold("foo", mode=ColorMode.ANSI_16)) == r("\x1b[1mfoo\x1b[22m")

@@ -18,14 +18,14 @@ class StyleBuilder:
         attrs: typing.Iterable[types.Attribute] = (),
         next_color_for_bg: bool = False,
         mode: typing.Optional[types.ColorMode] = None,
-        empty_if_not_visible: bool = False,
+        visible_if_colors: bool = False,
     ) -> None:
         self.fg = fg
         self.bg = bg
         self.attrs = frozenset(attrs)
         self.next_color_for_bg = next_color_for_bg
         self.mode = mode
-        self.empty_if_not_visible = empty_if_not_visible
+        self.visible_if_colors = visible_if_colors
 
     def __call__(
         self,
@@ -44,7 +44,9 @@ class StyleBuilder:
         else:
             text = sep.join(str(a) for a in args)
 
-        return stylize.stylize(text, mode, self.fg, self.bg, self.attrs)
+        return stylize.stylize(
+            text, mode, self.fg, self.bg, self.attrs, self.visible_if_colors
+        )
 
     def color_mode(self, mode: types.ColorMode) -> StyleBuilder:
         return StyleBuilder(self.fg, self.bg, self.attrs, self.next_color_for_bg, mode)
