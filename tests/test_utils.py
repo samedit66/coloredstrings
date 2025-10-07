@@ -8,25 +8,18 @@ from coloredstrings import utils
     [
         # no ANSI sequences -> unchanged
         ("plain text", "plain text"),
-
         # simple CSI color and reset sequences
         ("\x1b[31mred\x1b[0m", "red"),
-
         # multiple sequences interleaved with text
         ("A\x1b[1mB\x1b[22mC\x1b[4mD\x1b[24mE", "ABCDE"),
-
         # adjacent sequences only -> empty string
         ("\x1b[31m\x1b[0m", ""),
-
         # CSI sequence with multiple parameters and semicolons
         ("start\x1b[1;34;48mmid\x1b[0mend", "startmidend"),
-
         # sequences using final bytes other than 'm' (e.g. 'K' via CSI)
         ("line\x1b[2K\x1b[0m", "line"),
-
         # 7-bit C1 single-character sequence (ESC followed by a single byte in @-Z\-_)
         ("hello\x1bKworld", "helloworld"),
-
         # unicode and non-ASCII characters preserved
         ("привет\x1b[31mмир\x1b[0m", "приветмир"),
     ],
@@ -48,9 +41,7 @@ def test_incomplete_escape_sequence_is_not_removed():
 
 
 def test_multiple_mixed_sequences_removed_completely():
-    input_text = (
-        "Start\x1b[31mred\x1b[0mMiddle\x1bKclear\x1b[1;4mstyle\x1b[0mEnd"
-    )
+    input_text = "Start\x1b[31mred\x1b[0mMiddle\x1bKclear\x1b[1;4mstyle\x1b[0mEnd"
     assert utils.strip_ansi(input_text) == "StartredMiddleclearstyleEnd"
 
 
