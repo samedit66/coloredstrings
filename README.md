@@ -219,7 +219,7 @@ With a wide variety of options to force terminal color or not, `coloredstrings` 
 
 - **`FORCE_COLOR`** or : if set, this variable can be used to force color output even when detection would otherwise disable it (for example, when output is being piped).
 Following values are supported:
-  - `FORCE_COLOR<=0` - same as `ColorMode.NO_COLOR` or **`NO_COLOR`** environment variable
+  - `FORCE_COLOR<=0` - same as `ColorMode.NO_COLOR` or `NO_COLOR` environment variable
   - `FORCE_COLOR=1` - same as `ColorMode.ANSI_16`
   - `FORCE_COLOR=2` - same as `ColorMode.EXTENDED_256`
   - `FORCE_COLOR>=3` - same as `ColorMode.TRUE_COLOR`
