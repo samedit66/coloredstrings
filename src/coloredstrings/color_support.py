@@ -94,8 +94,12 @@ def detect_color_support(stream: typing.TextIO = sys.stdout) -> types.ColorMode:
 
     # 7) COLORTERM indicating truecolor
     colorterm = os.environ.get("COLORTERM", "").lower()
-    if "truecolor" in colorterm or "24bit" in colorterm:
+    if colorterm == "truecolor" or colorterm == "24bit":
         return types.ColorMode.TRUE_COLOR
+    if colorterm == "ansi256":
+        return types.ColorMode.EXTENDED_256
+    if colorterm == "ansi":
+        return types.ColorMode.ANSI_16
 
     # 8) TERM_PROGRAM heuristics (iTerm, Apple Terminal, etc.)
     if "TERM_PROGRAM" in os.environ:
