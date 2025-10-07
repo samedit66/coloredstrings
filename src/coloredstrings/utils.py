@@ -1,7 +1,8 @@
 import re
 
 
-_ANSI_ESCAPE = re.compile(r'''
+_ANSI_ESCAPE = re.compile(
+    r"""
     \x1B  # ESC
     (?:   # 7-bit C1 Fe (except CSI)
         [@-Z\\-_]
@@ -11,7 +12,9 @@ _ANSI_ESCAPE = re.compile(r'''
         [ -/]*  # Intermediate bytes
         [@-~]   # Final byte
     )
-''', re.VERBOSE)
+""",
+    re.VERBOSE,
+)
 
 
 def strip_ansi(colored_text: str) -> str:
@@ -21,4 +24,4 @@ def strip_ansi(colored_text: str) -> str:
     """
     # Taken from:
     # https://stackoverflow.com/questions/14693701/how-can-i-remove-the-ansi-escape-sequences-from-a-string-in-python
-    return _ANSI_ESCAPE.sub('', colored_text)
+    return _ANSI_ESCAPE.sub("", colored_text)
