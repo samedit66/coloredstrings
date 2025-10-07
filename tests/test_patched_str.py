@@ -1,3 +1,5 @@
+import pytest
+
 import importlib.util
 
 if not importlib.util.find_spec("forbiddenfruit"):
