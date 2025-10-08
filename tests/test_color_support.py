@@ -241,3 +241,13 @@ def test_detect_color_support__respect_clicolor_force() -> None:
 @mock.patch("sys.stdout.isatty", lambda: True)
 def test_detect_color_support__respect_clicolor() -> None:
     assert detect_color_support() == ColorMode.ANSI_16
+
+
+@mock.patch("sys.argv", ["--no-color"])
+def test_detect_color_support__no_color_cli_flag() -> None:
+    assert detect_color_support() == ColorMode.NO_COLOR
+
+
+@mock.patch("sys.argv", ["--color"])
+def test_detect_color_support__color_cli_flag() -> None:
+    assert detect_color_support() == ColorMode.ANSI_16

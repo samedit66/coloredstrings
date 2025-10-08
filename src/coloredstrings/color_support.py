@@ -12,6 +12,7 @@ def detect_color_support(stream: typing.TextIO = sys.stdout) -> types.ColorMode:
     Detect the best ColorMode available for the given stream and environment.
 
     The function tries, in order:
+     - `--no-color`, `--color` command line flags
      - FORCE_COLOR environment variable
      - NO_COLOR environment variable
      - CLICOLOR_FORCE / CLICOLOR environment variable
@@ -22,6 +23,14 @@ def detect_color_support(stream: typing.TextIO = sys.stdout) -> types.ColorMode:
      - COLORTERM / TERM_PROGRAM / TERM heuristics
      - fallback -> NO_COLOR
     """
+    # -1) Check for --no-color and --color
+    if "--no-color" in sys.argv:
+        return types.ColorMode.NO_COLOR
+
+    # Until a better strategy developed, return 16 colors mode
+    if "--color" in sys.argv:
+        return types.ColorMode.ANSI_16
+
     # 0) explicit override
     forced = _get_env_force_color("FORCE_COLOR")
     if forced is not None:
