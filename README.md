@@ -235,6 +235,9 @@ You can still programmatically override detection by calling `style.color_mode(.
 
 #### CLI arguments
 
+> [!NOTE]
+> CLI arguments take precedence over any environment variable.
+
 You can also specify command-line flags like `--no-color` to disable colars and `--color` to enable them.
 
 Example with a file `cool.py`:
