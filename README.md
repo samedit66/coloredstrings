@@ -35,8 +35,8 @@ print(style.italic.green("Success!"))
 - No dependencies
 - Composing styles in a chainable way
 - Nested colors and no nested styling bug
-- [`FORCE_COLOR`](https://force-color.org/), [`NO_COLOR`](https://no-color.org/), [`CLICOLOR_FORCE`&`CLICOLOR`](https://bixense.com/clicolors/) support
-- `--color` & `--no-color` friendly
+- Support for [common envs](#force_color-no_color-clicolor_force-and-clicolor): [`FORCE_COLOR`](https://force-color.org/), [`NO_COLOR`](https://no-color.org/), [`CLICOLOR_FORCE`&`CLICOLOR`](https://bixense.com/clicolors/)
+- Friednly to [CLI arguments](#cli-arguments): `--color` & `--no-color`
 - Support for 16-color, 256-color, and 24-bit (truecolor / RGB / hex) modes
 - Auto-detection of terminal color capabilities
 - Automatically fall back to the nearest supported color if the requested color isn't supported
@@ -232,6 +232,26 @@ Following values are supported:
 - **`CLICOLOR`**: same as `ColorMode.ANSI_16`.
 
 You can still programmatically override detection by calling `style.color_mode(...)` as shown above.
+
+#### CLI arguments
+
+You can also specify command-line flags like `--no-color` to disable colars and `--color` to enable them.
+
+Example with a file `cool.py`:
+
+```python
+from coloredstrings import style
+
+print(style.red(f'Hello {style.blue('world')}!'))
+```
+
+```bash
+# Run with python
+python cool.py --no-color
+
+# Run with uv
+uv run cool.py --color
+```
 
 ## Fallback behavior
 
