@@ -1,12 +1,12 @@
 from __future__ import annotations
 import typing
-import re
 
 
 from coloredstrings import (
     color_support,
     stylize,
     types,
+    utils,
 )
 
 
@@ -130,11 +130,45 @@ class StyleBuilder:
     def color256(self, index: int) -> StyleBuilder:
         return self._with_color(types.Extended256(index=index))
 
-    def rgb(self, r: int, g: int, b: int) -> StyleBuilder:
-        return self._with_color(types.Rgb(r=r, g=g, b=b))
+    def rgb(
+        self,
+        color: typing.Union[int, str, typing.Tuple[int, int, int]],
+        g: typing.Optional[int] = None,
+        b: typing.Optional[int] = None,
+    ) -> StyleBuilder:
+        """
+        Adds RGB color.
+
+        `color` may be:
+          - three-component tuple (r, g, b) with 0–255 integers,
+          - an int interpreted as 'r' component,
+          - or a CSS/hex color string (e.g. '#ff00aa' or 'fuchsia').
+
+        Alternatively call as rgb(r, g, b) by passing `color` as the red component
+        and providing `g` and `b` explicitly.
+
+        So, possible calls of this method looks like:
+        - `rgb('#f0f8ff')`
+        - `rgb(0, 255, 255)`
+        - `rgb((127, 255, 212))`
+        - `rgb('mediumaquamarine')`
+
+        Note, that `g` and `b` matter only when the first argument has type of `int`.
+        Otherwise, they are ignored.
+        """
+        if isinstance(color, int):
+            if g is None or b is None:
+                raise ValueError("You must specify 'green' and 'blue' components also")
+
+            rgb = types.Rgb(r=color, g=g, b=b)
+        elif isinstance(color, tuple):
+            rgb = types.Rgb(r=color[0], g=color[1], b=color[2])
+        else:
+            rgb = utils.rgb_from_hex_or_named_color(color)
+        return self._with_color(rgb)
 
     def hex(self, color_code: str) -> StyleBuilder:
-        return self._with_color(rgb_from_hex(color_code))
+        return self.rgb(color_code)
 
     @property
     def reset(self) -> StyleBuilder:
@@ -249,31 +283,3 @@ class StyleBuilder:
             fg = color
 
         return StyleBuilder(fg, bg, self.attrs, on_flag, self.mode)
-
-
-def rgb_from_hex(hex_code: str) -> types.Rgb:
-    s = hex_code.strip()
-
-    # Accepted input:
-    # '#ffcc00', 'ffcc00', '#FC0', 'fc0', '0xffcc00', '0xFC0'
-    if s.lower().startswith("0x"):
-        s = s[2:]
-    if s.startswith("#"):
-        s = s[1:]
-
-    # valid forms: 3 or 6 hex digits
-    if not re.fullmatch(r"[0-9A-Fa-f]{3}|[0-9A-Fa-f]{6}", s):
-        raise ValueError(
-            f"Invalid hex color format: {hex_code!r}. "
-            "Expected formats: '#RRGGBB', 'RRGGBB', '#RGB', 'RGB', or with '0x' prefix."
-        )
-
-    # expand shorthand (e.g. 'fc0' -> 'ffcc00')
-    if len(s) == 3:
-        s = "".join(ch * 2 for ch in s)
-
-    r = int(s[0:2], 16)
-    g = int(s[2:4], 16)
-    b = int(s[4:6], 16)
-
-    return types.Rgb(r=r, g=g, b=b)
