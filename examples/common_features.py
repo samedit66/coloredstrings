@@ -20,8 +20,14 @@ print(
 
 # 24-bit RGB / hex and 256-color:
 print(style.rgb(123, 45, 200)("custom"))
-print(style.hex("#aabbcc")("hex is also supported"))
+print(style.rgb("#aabbcc")("hex is also supported"))
+print(style.rgb("purple")("as well as named colors too"))
 print(style.color256(37)("256-color example"))
+
+# Note: previous versions of `coloredstrings` had a dedicated method
+# to accept hex color codes. It is now successfully handled by .rgb(...).
+# Do not use it - it’s deprecated.
+print(style.hex("#aabbcc"))
 
 # Define theme helpers:
 error = style.bold.red
