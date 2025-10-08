@@ -101,7 +101,7 @@ print(style.color256(37)("256-color example"))
 # Note: previous versions of `coloredstrings` had a dedicated method
 # to accept hex color codes. It is now successfully handled by .rgb(...).
 # Do not use it - it's deprecated.
-print(style.hex("#aabbcc"))
+print(style.hex("#caffac")("Deprecated method."))
 
 # Define theme helpers:
 error = style.bold.red
