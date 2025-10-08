@@ -36,7 +36,7 @@ print(style.italic.green("Success!"))
 - Composing styles in a chainable way
 - Nested colors and no nested styling bug
 - Support for [common envs](#force_color-no_color-clicolor_force-and-clicolor): [`FORCE_COLOR`](https://force-color.org/), [`NO_COLOR`](https://no-color.org/), [`CLICOLOR_FORCE`&`CLICOLOR`](https://bixense.com/clicolors/)
-- Friednly to [CLI arguments](#cli-arguments): `--color` & `--no-color`
+- Friendly to [CLI arguments](#cli-arguments): `--color` & `--no-color`
 - Support for 16-color, 256-color, and 24-bit (truecolor / RGB / hex) modes
 - Auto-detection of terminal color capabilities
 - Automatically fall back to the nearest supported color if the requested color isn't supported
