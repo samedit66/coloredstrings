@@ -41,6 +41,7 @@ print(style.italic.green("Success!"))
 - Auto-detection of terminal color capabilities
 - Automatically fall back to the nearest supported color if the requested color isn't supported
 - Friendly auto-complete API
+- Strip ANSI escape codes with `coloredstrings.strip_ansi`
 
 ---
 
