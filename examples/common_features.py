@@ -31,7 +31,7 @@ print(style.hex("#caffac")("Deprecated method."))
 
 # Define theme helpers:
 error = style.bold.red
-warning = style.hex("#FFA500")
+warning = style.rgb("#FFA500")
 
 print(error("Error!"))
 print(warning("Warning!"))
