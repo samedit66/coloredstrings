@@ -1,5 +1,6 @@
 from __future__ import annotations
 import typing
+import warnings
 
 
 from coloredstrings import (
@@ -168,6 +169,9 @@ class StyleBuilder:
         return self._with_color(rgb)
 
     def hex(self, color_code: str) -> StyleBuilder:
+        warnings.warn(
+            "`hex` is deprecated. Use `rgb` instead.", DeprecationWarning, stacklevel=2
+        )
         return self.rgb(color_code)
 
     @property
