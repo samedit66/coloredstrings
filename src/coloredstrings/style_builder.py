@@ -135,15 +135,7 @@ class StyleBuilder:
         """
         Adds RGB color.
 
-        `color` may be:
-          - three-component tuple (r, g, b) with 0–255 integers,
-          - an int interpreted as 'r' component,
-          - or a CSS/hex color string (e.g. '#ff00aa' or 'fuchsia').
-
-        Alternatively call as rgb(r, g, b) by passing `color` as the red component
-        and providing `g` and `b` explicitly.
-
-        So, possible calls of this method looks like:
+        Possible calls of this method looks like:
         - `rgb('#f0f8ff')`
         - `rgb(0, 255, 255)`
         - `rgb((127, 255, 212))`
@@ -151,6 +143,30 @@ class StyleBuilder:
 
         Note, that `g` and `b` matter only when the first argument has type of `int`.
         Otherwise, they are ignored.
+
+        Parameters
+        ----------
+        color : Union[int, str, Tuple[int, int, int]]
+            One of:
+            - a three-component tuple `(r, g, b)` with integer components in 0–255,
+            - an `int` interpreted as the red component (in this case `g` and `b`
+              must be supplied),
+            - a CSS/hex color string (for example `'#ff00aa'`, `'fuchsia'`, or
+              other CSS named colors).
+        g : Optional[int]
+            Green component when `color` is provided as an `int`. Ignored otherwise.
+        b : Optional[int]
+            Blue component when `color` is provided as an `int`. Ignored otherwise.
+
+        Returns
+        -------
+        StyleBuilder
+            A new StyleBuilder instance with the specified RGB color applied.
+
+        Raises
+        ------
+        ValueError
+            If `color` is an `int` but either `g` or `b` is not provided.
         """
         if isinstance(color, int):
             if g is None or b is None:
