@@ -163,6 +163,32 @@ class StyleBuilder:
             rgb = utils.rgb_from_hex_or_named_color(color)
         return self._with_color(rgb)
 
+    def __getattr__(self, color: str) -> StyleBuilder:
+        """
+        Treat attribute access as a named or hex color.
+
+        This method is invoked when an attribute lookup fails. The attribute name
+        (for example `purple` or `fuchsia` e.g. not explicitly defined one)
+        is forwarded to `rgb` and interpreted as a named CSS color or CSS/hex color string.
+
+        Parameters
+        ----------
+        color : str
+            The missing attribute name to interpret as a color.
+
+        Returns
+        -------
+        StyleBuilder
+            The result of calling `self.rgb(color)`.
+
+        Notes
+        -----
+        Attribute names must be valid Python identifiers; names that include
+        characters invalid in Python identifiers (for example `'#'`) cannot be used
+        directly as attributes and should be passed to `rgb()` instead.
+        """
+        return self.rgb(color)
+
     def hex(self, color_code: str) -> StyleBuilder:
         warnings.warn(
             "`hex` is deprecated. Use `rgb` instead.", DeprecationWarning, stacklevel=2
