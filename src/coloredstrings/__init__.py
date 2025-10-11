@@ -1,5 +1,3 @@
-from typing import Optional, Tuple, Union
-
 from .style_builder import StyleBuilder
 from .types import ColorMode
 from .utils import strip_ansi
@@ -50,21 +48,11 @@ overline = style.overline
 double_underline = style.double_underline
 visible = style.visible
 
+color_mode = style.color_mode
+color256 = style.color256
+rgb = style.rgb
 
-def color_mode(mode: ColorMode) -> StyleBuilder:
-    return style.color_mode(mode)
-
-
-def color256(index: int) -> StyleBuilder:
-    return style.color256(index)
-
-
-def rgb(
-    color: Union[int, str, Tuple[int, int, int]],
-    g: Optional[int] = None,
-    b: Optional[int] = None,
-) -> StyleBuilder:
-    return style.rgb(color, g, b)
+extend = style.extend
 
 
 def __getattr__(name: str) -> StyleBuilder:

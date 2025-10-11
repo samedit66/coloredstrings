@@ -210,6 +210,19 @@ def test_vararg_support(style: StyleBuilder) -> None:
     )
 
 
+def test_extend_style(style: StyleBuilder) -> None:
+    style = style.color_mode(ColorMode.ANSI_16).extend(
+        primary="blue",
+        secondary=(169, 169, 169),
+        success=style.green,
+    )
+
+    assert r(style.primary("foo")) == r("\x1b[94mfoo\x1b[39m")
+    # rgb gray (169,169,169) should map to ANSI white (37) in ANSI_16 mode
+    assert r(style.secondary("foo")) == r("\x1b[37mfoo\x1b[39m")
+    assert r(style.success("foo")) == r("\x1b[32mfoo\x1b[39m")
+
+
 def test_support_nesting_styles_of_same_type(style: StyleBuilder) -> None:
     # Use ANSI 16 for deterministic SGR codes
     s = r(

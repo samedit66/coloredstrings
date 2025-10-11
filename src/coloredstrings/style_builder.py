@@ -3,6 +3,7 @@ from __future__ import annotations
 import warnings
 from typing import (
     Any,
+    Dict,
     Iterable,
     Optional,
     Tuple,
@@ -21,6 +22,9 @@ class StyleBuilder:
         next_color_for_bg: bool = False,
         mode: Optional[types.ColorMode] = None,
         visible_if_colors: bool = False,
+        extensions: Optional[
+            Dict[str, Union[str, Tuple[int, int, int], StyleBuilder]]
+        ] = None,
     ) -> None:
         self.fg = fg
         self.bg = bg
@@ -28,6 +32,7 @@ class StyleBuilder:
         self.next_color_for_bg = next_color_for_bg
         self.mode = mode
         self.visible_if_colors = visible_if_colors
+        self.extensions = {} if extensions is None else extensions
 
     def __call__(
         self,
@@ -187,28 +192,33 @@ class StyleBuilder:
 
     def __getattr__(self, color: str) -> StyleBuilder:
         """
-        Treat attribute access as a named or hex color.
+        Treat unknown attributes as colors or registered extensions.
 
-        This method is invoked when an attribute lookup fails. The attribute name
-        (for example `purple` or `fuchsia` e.g. not explicitly defined one)
-        is forwarded to `rgb` and interpreted as a named CSS color or CSS/hex color string.
-
-        Parameters
-        ----------
-        color : str
-            The missing attribute name to interpret as a color.
-
-        Returns
-        -------
-        StyleBuilder
-            The result of calling `self.rgb(color)`.
+        Lookup order:
+        1. If `self.extensions` contains `color`, use that value:
+           - `str` or `tuple` -> forwarded to `rgb` and returns a StyleBuilder.
+           - `callable` -> returned as-is (allowing custom helpers).
+        2. Otherwise treat `color` as a CSS/named/hex color and return `self.rgb(color)`.
 
         Notes
         -----
-        Attribute names must be valid Python identifiers; names that include
-        characters invalid in Python identifiers (for example `'#'`) cannot be used
-        directly as attributes and should be passed to `rgb()` instead.
+        - Attribute names must be valid Python identifiers; use :meth:`rgb` for
+          names containing characters like `#`.
+        - Registered callables should accept the same kinds of arguments as other
+          style helpers if you plan to call them directly.
+
+        Example
+        -------
+        >>> s = StyleBuilder().extend(primary='blue', shout=StyleBuilder().red.bold)
+        >>> s.primary('ok')   # -> styled via rgb('blue')
+        >>> s.shout('hey')    # -> calls the registered callable
         """
+        possible_extension = (self.extensions or {}).get(color)
+        if possible_extension is not None:
+            if isinstance(possible_extension, (str, tuple)):
+                return self.rgb(possible_extension)
+            return possible_extension
+
         return self.rgb(color)
 
     def hex(self, color_code: str) -> StyleBuilder:
@@ -305,6 +315,63 @@ class StyleBuilder:
     def visible(self) -> StyleBuilder:
         return StyleBuilder(
             self.fg, self.bg, self.attrs, self.next_color_for_bg, self.mode, True
+        )
+
+    def extend(
+        self,
+        style_dict: Optional[
+            Dict[str, Union[str, Tuple[int, int, int], StyleBuilder]]
+        ] = None,
+        **styles,
+    ) -> StyleBuilder:
+        """
+        Extends `StyleBuilder` with new styles.
+
+        Example:
+
+        ```python
+        from coloredstrings import StyleBuilder
+
+        # Let's make a Bootstrap-like colored scheme
+        style = StyleBuilder()
+        style = style.extends(
+            primary="blue",
+            secondary=(169, 169, 169),
+            success=style.green,
+        )
+
+        print(style.success("Complete!"))
+        ```
+
+        Parameters
+        ----------
+        style_dict :
+            Optional dict of style-name -> color. Colors can be CSS/named
+            strings (e.g. `'fuchsia'` or `'#ff00aa'`), RGB tuples like (r, g, b)
+            or `StyleBuilder` instances.
+        **styles :
+            Additional styles provided as keyword arguments (same value types
+            as ``style_dict``).
+
+        Returns
+        -------
+        StyleBuilder
+            A new `StyleBuilder` instance with the merged extensions.
+        """
+        extensions = {
+            **self.extensions,
+            **(style_dict or {}),
+            **styles,
+        }
+
+        return StyleBuilder(
+            fg=self.fg,
+            bg=self.bg,
+            attrs=self.attrs,
+            next_color_for_bg=self.next_color_for_bg,
+            mode=self.mode,
+            visible_if_colors=self.visible_if_colors,
+            extensions=extensions,
         )
 
     def __repr__(self) -> str:
