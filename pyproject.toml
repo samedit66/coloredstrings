@@ -51,9 +51,6 @@ dev = [
     "pytest>=8.4.1",
     "ruff>=0.12.11",
 ]
-patched = [
-    "forbiddenfruit>=0.1.4",
-]
 
 [tool.mypy]
 python_version = 3.9

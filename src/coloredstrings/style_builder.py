@@ -1,7 +1,13 @@
 from __future__ import annotations
 
-import typing
 import warnings
+from typing import (
+    Any,
+    Iterable,
+    Optional,
+    Tuple,
+    Union,
+)
 
 from coloredstrings import color_support, stylize, types, utils
 
@@ -9,11 +15,11 @@ from coloredstrings import color_support, stylize, types, utils
 class StyleBuilder:
     def __init__(
         self,
-        fg: typing.Optional[types.Color] = None,
-        bg: typing.Optional[types.Color] = None,
-        attrs: typing.Iterable[types.Attribute] = (),
+        fg: Optional[types.Color] = None,
+        bg: Optional[types.Color] = None,
+        attrs: Iterable[types.Attribute] = (),
         next_color_for_bg: bool = False,
-        mode: typing.Optional[types.ColorMode] = None,
+        mode: Optional[types.ColorMode] = None,
         visible_if_colors: bool = False,
     ) -> None:
         self.fg = fg
@@ -25,9 +31,9 @@ class StyleBuilder:
 
     def __call__(
         self,
-        *args: typing.Any,
+        *args: Any,
         sep: str = " ",
-        mode: typing.Optional[types.ColorMode] = None,
+        mode: Optional[types.ColorMode] = None,
     ) -> str:
         if mode is None:
             if self.mode is not None:
@@ -128,9 +134,9 @@ class StyleBuilder:
 
     def rgb(
         self,
-        color: typing.Union[int, str, typing.Tuple[int, int, int]],
-        g: typing.Optional[int] = None,
-        b: typing.Optional[int] = None,
+        color: Union[int, str, Tuple[int, int, int]],
+        g: Optional[int] = None,
+        b: Optional[int] = None,
     ) -> StyleBuilder:
         """
         Adds RGB color.
@@ -311,7 +317,7 @@ class StyleBuilder:
         )
 
     def _with_color(
-        self, color: typing.Union[types.Ansi16Color, types.Extended256, types.Rgb]
+        self, color: Union[types.Ansi16Color, types.Extended256, types.Rgb]
     ) -> StyleBuilder:
         fg = self.fg
         bg = self.bg
