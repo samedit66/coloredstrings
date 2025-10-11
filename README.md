@@ -384,11 +384,11 @@ If you’ve used other Python color or formatting libraries before, `coloredstri
   ```python
   # termcolor
   from termcolor import colored
-  print(colored('Warning!', 'yellow', attrs=['bold']))
+  print(colored(f"Red text with {colored('underlined', attrs=['underline'])} part", "red"))
 
   # coloredstrings
   import coloredstrings as cs
-  print(cs.bold.yellow('Warning!'))
+  print(cs.red(f"Red text with {cs.underline('underlined')} part"))
   ```
 
 ### **yachalk**
