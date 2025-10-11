@@ -47,6 +47,7 @@ print(cs.italic.green("Success!"))
 - Strip ANSI escape codes with `strip_ansi`
 - Friendly to [CLI arguments](#cli-arguments): `--color` & `--no-color`
 - Support for [common envs](#force_color-no_color-clicolor_force-and-clicolor): [`FORCE_COLOR`](https://force-color.org/), [`NO_COLOR`](https://no-color.org/), [`CLICOLOR_FORCE` & `CLICOLOR`](https://bixense.com/clicolors/)
+- Curious how **coloredstrings** compares to other libraries? See [Migrating from other libraries](#migrating-from-other-libraries)
 
 ---
 
@@ -345,6 +346,89 @@ from coloredstrings import purple
 print(cs.lavender("`lavender` is not defined internally"))
 print(purple("Neither is `purple`."))
 ```
+
+---
+
+## Migrating from other libraries
+
+If you’ve used other Python color or formatting libraries before, `coloredstrings` will feel familiar but more robust and consistent. Below is a quick comparison of how it differs from popular alternatives:
+
+### **colorama**
+- **colorama** provides low-level ANSI control and Windows compatibility but lacks a fluent API.
+- `coloredstrings` supports more colors, styles and requires no use of ANSI codes directly.
+- Example:
+  ```python
+  # colorama
+  from colorama import Fore, Style
+  print(Fore.RED + 'Error' + Style.RESET_ALL)
+
+  # coloredstrings
+  import coloredstrings as cs
+  print(cs.red('Error'))
+  ```
+
+### **termcolor**
+- **termcolor** focuses on basic named colors but doesn’t support chaining or RGB.
+- `coloredstrings` supports truecolor, background colors, attributes, and chaining.
+- Example:
+  ```python
+  # termcolor
+  from termcolor import colored
+  print(colored('Warning!', 'yellow', attrs=['bold']))
+
+  # coloredstrings
+  import coloredstrings as cs
+  print(cs.bold.yellow('Warning!'))
+  ```
+- `coloredstrings` lacks nested styling bug presented in **termcolor**:
+  ```python
+  # termcolor
+  from termcolor import colored
+  print(colored('Warning!', 'yellow', attrs=['bold']))
+
+  # coloredstrings
+  import coloredstrings as cs
+  print(cs.bold.yellow('Warning!'))
+  ```
+
+### **yachalk**
+- **yachalk** inspired `coloredstrings`, but its mutable style builders can cause side effects.
+- `coloredstrings`’s `StyleBuilder` is **immutable**, ensuring no cross-contamination between styles.
+- Chain syntax and API are nearly identical expect that you don't need to remember a separate method for background coloring.
+- Example:
+  ```python
+  # yachalk
+  from yachalk import chalk
+  print(chalk.blue.bg_red.bold("Hello world!"))
+
+  # coloredstrings
+  import coloredstrings as cs
+  print(cs.blue.on.red.blod("Hello world!"))
+  ```
+
+### **rich**
+- **rich** is a full-featured library for terminal formatting, tables, markdown, and logging.
+- It’s excellent for large applications but too heavy for simple coloring.
+- `coloredstrings` aims to be **minimal, dependency-free, and Pythonic** for everyday terminal styling.
+- Example:
+  ```python
+  # rich
+  from rich.console import Console
+  Console().print('[bold red]Error[/bold red] Something went wrong')
+
+  # coloredstrings
+  import coloredstrings as cs
+  print(cs.bold.red('Error:'), 'Something went wrong')
+  ```
+
+In short:
+| Library | No dependencies | Chainable | Truecolor | Immutable Styles | No nested styling bug | Focus |
+|----------|---------------|------------|-------------|------------------|----|----|
+| colorama | ✅  | ❌ | ❌ | ❌ | ✅ | Compatibility |
+| termcolor | ✅  | ❌ | ❌ | ❌ | ❌ | Simplicity |
+| yachalk | ✅  | ✅ | ✅ | ❌ | ✅ | Modern styling |
+| rich | ❌ | ✅ | ✅ | ✅ | ✅ | Full-featured UI |
+| **coloredstrings** | ✅ | ✅ | ✅ | ✅ | ✅ | Lightweight styling |
 
 ---
 
