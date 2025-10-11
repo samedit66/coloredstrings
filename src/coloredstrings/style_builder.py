@@ -56,11 +56,27 @@ class StyleBuilder:
         )
 
     def color_mode(self, mode: types.ColorMode) -> StyleBuilder:
-        return StyleBuilder(self.fg, self.bg, self.attrs, self.next_color_for_bg, mode)
+        return StyleBuilder(
+            fg=self.fg,
+            bg=self.bg,
+            attrs=self.attrs,
+            next_color_for_bg=self.next_color_for_bg,
+            mode=mode,
+            visible_if_colors=self.visible_if_colors,
+            extensions=self.extensions,
+        )
 
     @property
     def on(self) -> StyleBuilder:
-        return StyleBuilder(self.fg, self.bg, self.attrs, True, self.mode)
+        return StyleBuilder(
+            fg=self.fg,
+            bg=self.bg,
+            attrs=self.attrs,
+            next_color_for_bg=True,
+            mode=self.mode,
+            visible_if_colors=self.visible_if_colors,
+            extensions=self.extensions,
+        )
 
     @property
     def black(self) -> StyleBuilder:
@@ -314,7 +330,13 @@ class StyleBuilder:
     @property
     def visible(self) -> StyleBuilder:
         return StyleBuilder(
-            self.fg, self.bg, self.attrs, self.next_color_for_bg, self.mode, True
+            fg=self.fg,
+            bg=self.bg,
+            attrs=self.attrs,
+            next_color_for_bg=self.next_color_for_bg,
+            mode=self.mode,
+            visible_if_colors=True,
+            extensions=self.extensions,
         )
 
     def extend(
@@ -380,7 +402,13 @@ class StyleBuilder:
     def _with_attrs(self, *attrs: types.Attribute) -> StyleBuilder:
         new_attrs = self.attrs.union(attrs)
         return StyleBuilder(
-            self.fg, self.bg, new_attrs, self.next_color_for_bg, self.mode
+            fg=self.fg,
+            bg=self.bg,
+            attrs=new_attrs,
+            next_color_for_bg=self.next_color_for_bg,
+            mode=self.mode,
+            visible_if_colors=self.visible_if_colors,
+            extensions=self.extensions,
         )
 
     def _with_color(
@@ -388,12 +416,20 @@ class StyleBuilder:
     ) -> StyleBuilder:
         fg = self.fg
         bg = self.bg
-        on_flag = self.next_color_for_bg
+        next_color_for_bg = self.next_color_for_bg
 
-        if on_flag:
+        if next_color_for_bg:
             bg = color
-            on_flag = False
+            next_color_for_bg = False
         else:
             fg = color
 
-        return StyleBuilder(fg, bg, self.attrs, on_flag, self.mode)
+        return StyleBuilder(
+            fg=fg,
+            bg=bg,
+            attrs=self.attrs,
+            next_color_for_bg=next_color_for_bg,
+            mode=self.mode,
+            visible_if_colors=self.visible_if_colors,
+            extensions=self.extensions,
+        )
