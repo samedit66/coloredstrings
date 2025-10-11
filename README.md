@@ -14,16 +14,19 @@
 
 ---
 
-**coloredstrings** is a small utility for expressive terminal colors and text styles. It exposes a fluent, chainable API for styling strings - similar to the [yachalk](https://github.com/bluenote10/yachalk) package, and can act as a drop-in replacement.
+**coloredstrings** is a small utility for expressive terminal colors and text styles.
+It exposes a fluent, chainable API for styling strings and can act as a drop-in replacement for similar packages like [yachalk](https://github.com/bluenote10/yachalk).
+
+Designed to be suitable, useful, and "batteries-included".
 
 Example:
 
 ```python
-from coloredstrings import style
+import coloredstrings as cs
 
-print(style.bold.underline.red("Error:"), "Something went wrong.")
-print(style.blue.bold("Info:"), "Everything is OK")
-print(style.italic.green("Success!"))
+print(cs.bold.underline.red("Error:"), "Something went wrong.")
+print(cs.blue.bold("Info:"), "Everything is OK")
+print(cs.italic.green("Success!"))
 ```
 
 ![preview image](https://github.com/samedit66/coloredstrings/blob/main/media/preview.png?raw=true)
@@ -33,15 +36,17 @@ print(style.italic.green("Success!"))
 ## Features🔥
 
 - No dependencies
-- Composing styles in a chainable way
+- Composing styles in a chainable way: `black.on.white.bold("What's up?")`
 - Nested colors and no nested styling bug
-- Support for [common envs](#force_color-no_color-clicolor_force-and-clicolor): [`FORCE_COLOR`](https://force-color.org/), [`NO_COLOR`](https://no-color.org/), [`CLICOLOR_FORCE`&`CLICOLOR`](https://bixense.com/clicolors/)
-- Friendly to [CLI arguments](#cli-arguments): `--color` & `--no-color`
 - Support for 16-color, 256-color, and 24-bit (truecolor / RGB / hex) modes
 - Auto-detection of terminal color capabilities
-- Automatically fall back to the nearest supported color if the requested color isn't supported
-- Friendly auto-complete API
-- Strip ANSI escape codes with `coloredstrings.strip_ansi`
+- Automatically fallback to the nearest supported color if the requested color isn't supported
+- Friendly autocomplete API
+- Call any of [named true colors](https://drafts.csswg.org/css-color/#named-colors) as a method: `aqua`, `pink` and so on
+- Extend default styles with user-defined ones
+- Strip ANSI escape codes with `strip_ansi`
+- Friendly to [CLI arguments](#cli-arguments): `--color` & `--no-color`
+- Support for [common envs](#force_color-no_color-clicolor_force-and-clicolor): [`FORCE_COLOR`](https://force-color.org/), [`NO_COLOR`](https://no-color.org/), [`CLICOLOR_FORCE` & `CLICOLOR`](https://bixense.com/clicolors/)
 
 ---
 
@@ -69,72 +74,92 @@ Run the bundled demo:
 python -m coloredstrings
 ```
 
-Examples using the `style` object:
+Features:
 
 ```python
-from coloredstrings import style
+import coloredstrings as cs
 
-print(style.bold.underline.red("Error:"), "Something went wrong.")
-print(style.blue.bold("Info:"), "Everything is OK")
-print(style.italic.green("Success!"))
+print(cs.bold.underline.red("Error:"), "Something went wrong.")
+print(cs.blue.bold("Info:"), "Everything is OK")
+print(cs.italic.green("Success!"))
 
-# style(...) accepts multiple arguments and a `sep` argument like `print`:
-print(style.green("That's", "great!"))
-print(style.blue(1, 3.14, True, sep=", "))
+# styles accepts multiple arguments and a `sep` argument like `print`:
+print(cs.green("That's", "great!"))
+print(cs.blue(1, 3.14, True, sep=", "))
 
 # Nesting and combining styles:
-print(style.red(f"Hello {style.underline.on.blue('world')}!"))
+print(cs.red(f"Hello {cs.underline.on.blue('world')}!"))
 print(
-    style.green(
+    cs.green(
         "I am a green line "
-        + style.blue.underline.bold("with a blue substring")
+        + cs.blue.underline.bold("with a blue substring")
         + " that becomes green again!"
     )
 )
 
 # 24-bit RGB / hex and 256-color:
-print(style.rgb(123, 45, 200)("custom"))
-print(style.rgb("#aabbcc")("hex is also supported"))
-print(style.rgb("purple")("as well as named colors too"))
-print(style.color256(37)("256-color example"))
-
-# Note: previous versions of `coloredstrings` had a dedicated method
-# to accept hex color codes. It is now successfully handled by .rgb(...).
-# Do not use it - it's deprecated.
-print(style.hex("#caffac")("Deprecated method."))
+print(cs.rgb(123, 45, 200)("custom"))
+print(cs.rgb("#aabbcc")("hex is also supported"))
+print(cs.rgb("purple")("as well as named colors too"))
+print(cs.rgb((169, 169, 169))("tuples can also be used"))
+print(cs.color256(37)("256-color example"))
 
 # Define theme helpers:
-error = style.bold.red
-warning = style.rgb("#FFA500")
+error = cs.bold.red
+warning = cs.rgb("#FFA500")
 
 print(error("Error!"))
 print(warning("Warning!"))
+
+# Or extend with your own styles:
+bootstrap = cs.extend(
+    primary="blue",            # may be a color / style name
+    secondary=(169, 169, 169), # RGB-tuple color
+    success=cs.green,          # or any `StyleBuilder` instance
+)
+
+print(bootstrap.primary("Click me!"))
+print(bootstrap.italic.secondary("You can combine builtin styles with your own!"))
+print(bootstrap.success("Complete."))
 ```
 
 ---
 
 ## Usage
 
-All you need to use (mostly) is the global `style` object - an instance of the `StyleBuilder` class. It provides a chainable API that looks like this:
+Import `coloredstrings` module directly:
 
 ```python
-style.red.on.blue("Hello", "world!")
+from coloredstrings import white, red, blue
+
+print(white.bold("white bold text"))
+print(red("just red text"))
+print(blue.strikethrough("blue strikethrough text"))
 ```
 
-Put simply: you name the style pieces dot after dot and `StyleBuilder` handles the rest. The final pair of parentheses is a call that styles the given strings (or any sequence of values). Arguments are converted to strings and joined using an optional `sep` argument (which defaults to a single space):
+Or use only needed styles:
 
 ```python
-style.<style1>.[<style2>...](v1, [v2...], sep=' ')
+import coloredstrings as cs
+
+print(cs.green.on.pink("green text on pink background"))
 ```
 
-### `style` object
+Chainable API allows you to easily compose styles and use them. When passing final text to a style, you can pass multiple objects which will be turned to strings and joined using an optional `sep` argument (which defaults to a single space):
 
-`style` is an immutable builder object used to construct composite styles and themes.
-Because style is immutable, creating a new style from an existing one doesn't modify the original. This avoids accidental cross-contamination of styles presented in `yachalk`:
+```python
+import coloredstrings as cs
+
+print(cs.orange("text", 1, 1.0, True, sep="-"))
+```
+
+### `StyleBuilder`
+
+Although you use `cs` everywhere, the actual work is done by an immutable `StyleBuilder` class under the hood. Because every style object is immutable, creating a new style from an existing one doesn't modify the original. This avoids accidental cross-contamination of styles present in `yachalk`:
 
 ```python
 from yachalk import chalk
-from coloredstrings import style
+import coloredstrings as cs
 
 # With yachalk
 s1 = chalk.italic
@@ -146,36 +171,35 @@ print(s2("Yes, you are!"))
 print("-" * 8)
 
 # With coloredstrings
-s3 = style.italic
+s3 = cs.italic
 s4 = s3.red
 
 print(s3("Style, am I still red?"))
 print(s4("Sure not, but I am!"))
-
 ```
 
 ![yachalk bug image](https://github.com/samedit66/coloredstrings/blob/main/media/yachalk_bug.png?raw=true)
 
-In this example, `s1/s2` and `s3/s4` behave different: `s1/s2` are actually the same style, while `s3/s4` are truly independent styles.
+In this example, `s1/s2` and `s3/s4` behave differently: `s1/s2` are actually the same style, while `s3/s4` are truly independent styles.
 
 ### Chaining and gotchas
 
-`coloredstrings` - like `yachalk` and several other libraries - is built around chaining styles. Unlike some libraries, it does not provide separate background helpers such as `bg_blue`. Instead, use the `on` helper to mark that the next color in the chain should be a background color. This gives you explicit control over whether the color you add applies to the foreground or the background.
+`coloredstrings` — like `yachalk` and several other libraries — is built around chaining styles. Unlike some libraries, it does not provide separate background helpers such as `bg_blue`. Instead, use the `on` helper to mark that the next color in the chain should be a background color. This gives you explicit control over whether the color you add applies to the foreground or the background.
 
 Example:
 
 ```python
-from coloredstrings import style
+import coloredstrings as cs
 
 # Red text on a blue background
-print(style.red.on.blue("Hey!"))
+print(cs.red.on.blue("Hey!"))
 
 # Don't write code like this - it's hard to read!
-# It's equivalent to `style.white.on.black(...)` but much less clear
-print(style.white.on.on.black("Do not write code like that."))
+# It's equivalent to `cs.white.on.black(...)` but much less clear
+print(cs.white.on.on.black("Do not write code like that."))
 
 # Green background with default foreground
-print(style.on.green("Text on a green background"))
+print(cs.on.green("Text on a green background"))
 ```
 
 A few important gotchas:
@@ -183,14 +207,13 @@ A few important gotchas:
 - If you chain multiple foreground colors, only the last foreground color takes effect:
 
   ```python
-  print(style.red.green.blue("Blue text")) # result: blue foreground
+  print(cs.red.green.blue("Blue text")) # result: blue foreground
   ```
 
 - `on` affects only the next color in the chain. For example:
 
-
   ```python
-  print(style.on.magenta.cyan("Cyan text on magenta background"))
+  print(cs.on.magenta.cyan("Cyan text on magenta background"))
   ```
 
   Here `magenta` becomes the background (because of `on`) and `cyan` is the foreground.
@@ -212,6 +235,8 @@ Example:
 ```python
 from coloredstrings import style, ColorMode
 
+# Notice `style`? It's a default style which does nothing.
+
 # Force no colors
 just_text = style.color_mode(ColorMode.NO_COLORS)
 print(just_text.red("It isn't red"))
@@ -225,14 +250,14 @@ print(rgb_default.hex("#ca7e8d")("Hi!"))
 
 With a wide variety of options to force terminal color or not, `coloredstrings` respects common environment conventions (in order of precedence - higher precedence goes first):
 
-- **`FORCE_COLOR`** or : if set, this variable can be used to force color output even when detection would otherwise disable it (for example, when output is being piped).
+- **`FORCE_COLOR`**: if set, this variable can be used to force color output even when detection would otherwise disable it (for example, when output is being piped).
 Following values are supported:
   - `FORCE_COLOR<=0` - same as `ColorMode.NO_COLOR` or `NO_COLOR` environment variable
   - `FORCE_COLOR=1` - same as `ColorMode.ANSI_16`
   - `FORCE_COLOR=2` - same as `ColorMode.EXTENDED_256`
   - `FORCE_COLOR>=3` - same as `ColorMode.TRUE_COLOR`
 
-- **`NO_COLOR`**: if this environment variable is present (with any value beside empty string), coloredstrings will avoid emitting color escape sequences. This is the community-standard way for users to opt out of colored output.
+- **`NO_COLOR`**: if this environment variable is present (with any value other than an empty string), coloredstrings will avoid emitting color escape sequences. This is the community-standard way for users to opt out of colored output.
 
 - **`CLICOLOR_FORCE`**: same as `FORCE_COLOR`.
 
@@ -245,14 +270,14 @@ You can still programmatically override detection by calling `style.color_mode(.
 > [!NOTE]
 > CLI arguments take precedence over any environment variable.
 
-You can also specify command-line flags like `--no-color` to disable colars and `--color` to enable them.
+You can also specify command-line flags like `--no-color` to disable colors and `--color` to enable them.
 
 Example with a file `cool.py`:
 
 ```python
-from coloredstrings import style
+import coloredstrings as cs
 
-print(style.red(f'Hello {style.blue('world')}!'))
+print(cs.red(f"Hello {style.blue('world')}!"))
 ```
 
 ```bash
@@ -308,7 +333,18 @@ Many terminals do not support full truecolor (`ColorMode.TRUE_COLOR`). When a re
 - `bright_cyan`
 - `bright_white`
 - `color256(index)` - 256 color
-- `rgb(r, g, b)`, `hex(color_code)` - 24-bit RGB color
+- `rgb(r, g, b)`, `rgb(hex)`, `rgb(color_name)` - 24-bit RGB color
+
+When you call `cs` with a method not defined above, it tries to interpret the method name as a [named color](https://drafts.csswg.org/css-color/#named-colors).
+This allows having many color methods without the need to define them explicitly:
+
+```python
+import coloredstrings as cs
+from coloredstrings import purple
+
+print(cs.lavender("`lavender` is not defined internally"))
+print(purple("Neither is `purple`."))
+```
 
 ---
 
@@ -320,4 +356,4 @@ I’d love your help to make coloredstrings even better!
 - 🔧 Want to improve the code? PRs are always welcome! Please include tests for any new behavior.
 - ♻️ Try to keep changes backward-compatible where possible
 - 🎨 Adding new styles or helpers? Don’t forget to update the README and include tests to ensure ANSI - sequences open and close correctly
--  ⭐ If you like this project, consider giving it a star - it really helps others discover it!
+- ⭐ If you like this project, consider giving it a star - it really helps others discover it!

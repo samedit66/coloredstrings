@@ -1,5 +1,5 @@
-from coloredstrings import style
+import coloredstrings as cs
 
-print(style.bold.underline.red("Error:"), "Something went wrong.")
-print(style.blue.bold("Info:"), "Everything is OK")
-print(style.italic.green("Success!"))
+print(cs.bold.underline.red("Error:"), "Something went wrong.")
+print(cs.blue.bold("Info:"), "Everything is OK")
+print(cs.italic.green("Success!"))

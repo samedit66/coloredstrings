@@ -1,6 +1,6 @@
 from yachalk import chalk
 
-from coloredstrings import style
+import coloredstrings as cs
 
 # With yachalk
 s1 = chalk.italic
@@ -12,7 +12,7 @@ print(s2("Yes, you are!"))
 print("-" * 8)
 
 # With coloredstrings
-s3 = style.italic
+s3 = cs.italic
 s4 = s3.red
 
 print(s3("Style, am I still red?"))
