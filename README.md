@@ -131,19 +131,19 @@ print(bootstrap.success("Complete."))
 Import `coloredstrings` module directly:
 
 ```python
-from coloredstrings import white, red, blue
+import coloredstrings as cs
 
-print(white.bold("white bold text"))
-print(red("just red text"))
-print(blue.strikethrough("blue strikethrough text"))
+print(cs.green.on.pink("green text on pink background"))
 ```
 
 Or use only needed styles:
 
 ```python
-import coloredstrings as cs
+from coloredstrings import white, red, blue
 
-print(cs.green.on.pink("green text on pink background"))
+print(white.bold("white bold text"))
+print(red("just red text"))
+print(blue.strikethrough("blue strikethrough text"))
 ```
 
 Chainable API allows you to easily compose styles and use them. When passing final text to a style, you can pass multiple objects which will be turned to strings and joined using an optional `sep` argument (which defaults to a single space):
