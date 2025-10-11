@@ -2,7 +2,6 @@ import re
 
 from coloredstrings import types
 
-
 _ANSI_ESCAPE = re.compile(
     r"""
     \x1B  # ESC

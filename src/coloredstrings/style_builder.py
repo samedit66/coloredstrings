@@ -1,14 +1,9 @@
 from __future__ import annotations
+
 import typing
 import warnings
 
-
-from coloredstrings import (
-    color_support,
-    stylize,
-    types,
-    utils,
-)
+from coloredstrings import color_support, stylize, types, utils
 
 
 class StyleBuilder:

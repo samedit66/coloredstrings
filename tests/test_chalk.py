@@ -3,10 +3,9 @@ The tests below are a direct port of the tests found in https://github.com/bluen
 """
 
 import pytest
-
-from coloredstrings import StyleBuilder, ColorMode
-
 from helper import r
+
+from coloredstrings import ColorMode, StyleBuilder
 
 
 @pytest.fixture

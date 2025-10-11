@@ -2,10 +2,7 @@
 The tests below are a direct port of the tests found in https://github.com/bluenote10/yachalk/blob/master/tests/test_ansi.py.
 """
 
-from coloredstrings.ansi_conversions import (
-    rgb_to_ansi_256,
-    ansi_256_to_ansi_16,
-)
+from coloredstrings.ansi_conversions import ansi_256_to_ansi_16, rgb_to_ansi_256
 
 
 def test_rgb_to_ansi_256() -> None:

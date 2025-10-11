@@ -1,13 +1,8 @@
 import os
 import sys
-
 from unittest import mock
 
-from coloredstrings.color_support import (
-    detect_color_support,
-    _get_env_force_color,
-)
-
+from coloredstrings.color_support import _get_env_force_color, detect_color_support
 from coloredstrings.types import ColorMode
 
 

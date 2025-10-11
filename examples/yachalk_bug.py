@@ -1,4 +1,5 @@
 from yachalk import chalk
+
 from coloredstrings import style
 
 # With yachalk

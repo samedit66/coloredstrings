@@ -15,7 +15,7 @@ repos:
   hooks:
     - id: ruff-check
       # run auto-fixes where possible
-      args: ["--fix"]
+      args: ["--select", "I,RUF022", "--fix"]
     - id: ruff-format
 
 # mypy

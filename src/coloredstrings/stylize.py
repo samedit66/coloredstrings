@@ -1,9 +1,7 @@
-import typing
 import re
-
+import typing
 
 from coloredstrings import ansi_conversions, types
-
 
 _ESC = "\x1b["
 _RESET = _ESC + "0m"
