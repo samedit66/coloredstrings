@@ -427,7 +427,7 @@ In short:
 | colorama | ✅  | ❌ | ❌ | ❌ | ✅ | Compatibility |
 | termcolor | ✅  | ❌ | ❌ | ❌ | ❌ | Simplicity |
 | yachalk | ✅  | ✅ | ✅ | ❌ | ✅ | Modern styling |
-| rich | ❌ | ✅ | ✅ | ✅ | ✅ | Full-featured UI |
+| rich | ❌ | ❌ | ✅ | ✅ | ✅ | Full-featured UI |
 | **coloredstrings** | ✅ | ✅ | ✅ | ✅ | ✅ | Lightweight styling |
 
 ---
