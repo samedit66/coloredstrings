@@ -51,18 +51,14 @@ class StyleBuilder:
         if mode is None:
             mode = self.mode
 
-        if len(args) == 1 and isinstance(args[0], str):
-            text = args[0]
-        else:
-            text = sep.join(str(a) for a in args)
-
+        text = sep.join(str(a) for a in args)
         return stylize.stylize(
-            text,
-            mode,
-            self.fg,
-            self.bg,
-            self.attrs,
-            self.only_visible_if_colors_enabled,
+            text=text,
+            mode=mode,
+            fg=self.fg,
+            bg=self.bg,
+            attrs=self.attrs,
+            only_visible_if_colors_enabled=self.only_visible_if_colors_enabled,
         )
 
     def color_mode(self, mode: types.ColorMode) -> StyleBuilder:
