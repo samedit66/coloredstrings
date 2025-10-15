@@ -376,9 +376,6 @@ class StyleBuilder:
             },
         )
 
-    def __repr__(self) -> str:
-        return f"StyleBuilder(fg={self.fg!r}, bg={self.bg!r}, attrs={set(self.attrs)!r}, on={self.next_color_for_bg})"
-
     def _with_attrs(self, *attrs: types.Attribute) -> StyleBuilder:
         return dataclasses.replace(self, attrs=self.attrs.union(attrs))
 
