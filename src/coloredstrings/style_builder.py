@@ -31,7 +31,7 @@ class StyleBuilder:
     mode: Optional[types.ColorMode] = None
     """Color mode."""
 
-    visible_if_colors: bool = False
+    only_visible_if_colors_enabled: bool = False
     """Used for `visible` style: whether the text should be replaced with an empty string when colors are not available."""
 
     # This annotation hurts me very much...
@@ -58,7 +58,12 @@ class StyleBuilder:
             text = sep.join(str(a) for a in args)
 
         return stylize.stylize(
-            text, mode, self.fg, self.bg, self.attrs, self.visible_if_colors
+            text,
+            mode,
+            self.fg,
+            self.bg,
+            self.attrs,
+            self.only_visible_if_colors_enabled,
         )
 
     def color_mode(self, mode: types.ColorMode) -> StyleBuilder:
@@ -319,7 +324,7 @@ class StyleBuilder:
 
     @property
     def visible(self) -> StyleBuilder:
-        return dataclasses.replace(self, visible_if_colors=True)
+        return dataclasses.replace(self, only_visible_if_colors_enabled=True)
 
     def extend(
         self,

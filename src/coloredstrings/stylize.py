@@ -19,10 +19,10 @@ def stylize(
     fg: typing.Optional[types.Color] = None,
     bg: typing.Optional[types.Color] = None,
     attrs: typing.Iterable[types.Attribute] = (),
-    visible_if_colors: bool = False,
+    only_visible_if_colors_enabled: bool = False,
 ) -> str:
     if mode == types.ColorMode.NO_COLOR or len(text) == 0:
-        if visible_if_colors:
+        if only_visible_if_colors_enabled:
             return ""
 
         # Special case of reset - even when no text is passed,
