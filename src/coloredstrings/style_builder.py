@@ -28,7 +28,9 @@ class StyleBuilder:
     next_color_for_bg: bool = False
     """Whether the next `color` method should be treated as setting the background color."""
 
-    mode: Optional[types.ColorMode] = None
+    mode: types.ColorMode = dataclasses.field(
+        default_factory=color_support.detect_color_support
+    )
     """Color mode."""
 
     only_visible_if_colors_enabled: bool = False
@@ -47,10 +49,7 @@ class StyleBuilder:
         mode: Optional[types.ColorMode] = None,
     ) -> str:
         if mode is None:
-            if self.mode is not None:
-                mode = self.mode
-            else:
-                mode = color_support.detect_color_support()
+            mode = self.mode
 
         if len(args) == 1 and isinstance(args[0], str):
             text = args[0]
