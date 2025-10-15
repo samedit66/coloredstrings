@@ -56,7 +56,7 @@ extend = style.extend
 
 
 def __getattr__(name: str) -> StyleBuilder:
-    return style.rgb(name)
+    return style.__getattr__(name)
 
 
 def __dir__() -> list[str]:
