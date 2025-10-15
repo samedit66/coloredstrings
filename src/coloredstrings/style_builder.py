@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+import dataclasses
 import warnings
 from typing import (
     Any,
     Dict,
-    Iterable,
+    FrozenSet,
     Optional,
     Tuple,
     Union,
@@ -13,26 +14,31 @@ from typing import (
 from coloredstrings import color_support, stylize, types, utils
 
 
+@dataclasses.dataclass(frozen=True)
 class StyleBuilder:
-    def __init__(
-        self,
-        fg: Optional[types.Color] = None,
-        bg: Optional[types.Color] = None,
-        attrs: Iterable[types.Attribute] = (),
-        next_color_for_bg: bool = False,
-        mode: Optional[types.ColorMode] = None,
-        visible_if_colors: bool = False,
-        extensions: Optional[
-            Dict[str, Union[str, Tuple[int, int, int], StyleBuilder]]
-        ] = None,
-    ) -> None:
-        self.fg = fg
-        self.bg = bg
-        self.attrs = frozenset(attrs)
-        self.next_color_for_bg = next_color_for_bg
-        self.mode = mode
-        self.visible_if_colors = visible_if_colors
-        self.extensions = {} if extensions is None else extensions
+    fg: Optional[types.Color] = None
+    """Foreground color."""
+
+    bg: Optional[types.Color] = None
+    """Background color."""
+
+    attrs: FrozenSet[types.Attribute] = dataclasses.field(default_factory=frozenset)
+    """Styling attributes (bold, italic, etc.)."""
+
+    next_color_for_bg: bool = False
+    """Whether the next `color` method should be treated as setting the background color."""
+
+    mode: Optional[types.ColorMode] = None
+    """Color mode."""
+
+    visible_if_colors: bool = False
+    """Used for `visible` style: whether the text should be replaced with an empty string when colors are not available."""
+
+    # This annotation hurts me very much...
+    extensions: Dict[str, Union[str, Tuple[int, int, int], StyleBuilder]] = (
+        dataclasses.field(default_factory=dict)
+    )
+    """User-defined extension styles."""
 
     def __call__(
         self,
@@ -56,27 +62,11 @@ class StyleBuilder:
         )
 
     def color_mode(self, mode: types.ColorMode) -> StyleBuilder:
-        return StyleBuilder(
-            fg=self.fg,
-            bg=self.bg,
-            attrs=self.attrs,
-            next_color_for_bg=self.next_color_for_bg,
-            mode=mode,
-            visible_if_colors=self.visible_if_colors,
-            extensions=self.extensions,
-        )
+        return dataclasses.replace(self, mode=mode)
 
     @property
     def on(self) -> StyleBuilder:
-        return StyleBuilder(
-            fg=self.fg,
-            bg=self.bg,
-            attrs=self.attrs,
-            next_color_for_bg=True,
-            mode=self.mode,
-            visible_if_colors=self.visible_if_colors,
-            extensions=self.extensions,
-        )
+        return dataclasses.replace(self, next_color_for_bg=True)
 
     @property
     def black(self) -> StyleBuilder:
@@ -329,15 +319,7 @@ class StyleBuilder:
 
     @property
     def visible(self) -> StyleBuilder:
-        return StyleBuilder(
-            fg=self.fg,
-            bg=self.bg,
-            attrs=self.attrs,
-            next_color_for_bg=self.next_color_for_bg,
-            mode=self.mode,
-            visible_if_colors=True,
-            extensions=self.extensions,
-        )
+        return dataclasses.replace(self, visible_if_colors=True)
 
     def extend(
         self,
@@ -380,36 +362,20 @@ class StyleBuilder:
         StyleBuilder
             A new `StyleBuilder` instance with the merged extensions.
         """
-        extensions = {
-            **self.extensions,
-            **(style_dict or {}),
-            **styles,
-        }
-
-        return StyleBuilder(
-            fg=self.fg,
-            bg=self.bg,
-            attrs=self.attrs,
-            next_color_for_bg=self.next_color_for_bg,
-            mode=self.mode,
-            visible_if_colors=self.visible_if_colors,
-            extensions=extensions,
+        return dataclasses.replace(
+            self,
+            extensions={
+                **self.extensions,
+                **(style_dict or {}),
+                **styles,
+            },
         )
 
     def __repr__(self) -> str:
         return f"StyleBuilder(fg={self.fg!r}, bg={self.bg!r}, attrs={set(self.attrs)!r}, on={self.next_color_for_bg})"
 
     def _with_attrs(self, *attrs: types.Attribute) -> StyleBuilder:
-        new_attrs = self.attrs.union(attrs)
-        return StyleBuilder(
-            fg=self.fg,
-            bg=self.bg,
-            attrs=new_attrs,
-            next_color_for_bg=self.next_color_for_bg,
-            mode=self.mode,
-            visible_if_colors=self.visible_if_colors,
-            extensions=self.extensions,
-        )
+        return dataclasses.replace(self, attrs=self.attrs.union(attrs))
 
     def _with_color(
         self, color: Union[types.Ansi16Color, types.Extended256, types.Rgb]
@@ -424,12 +390,6 @@ class StyleBuilder:
         else:
             fg = color
 
-        return StyleBuilder(
-            fg=fg,
-            bg=bg,
-            attrs=self.attrs,
-            next_color_for_bg=next_color_for_bg,
-            mode=self.mode,
-            visible_if_colors=self.visible_if_colors,
-            extensions=self.extensions,
+        return dataclasses.replace(
+            self, fg=fg, bg=bg, next_color_for_bg=next_color_for_bg
         )
