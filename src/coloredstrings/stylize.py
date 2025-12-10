@@ -44,7 +44,7 @@ def stylize(
         pairs.append(
             types.CodePair(
                 start=f"\x1b]8;;{url}\x1b\\",
-                end=f"\x1b]8;;\x1b\\",
+                end="\x1b]8;;\x1b\\",
             )
         )
 
