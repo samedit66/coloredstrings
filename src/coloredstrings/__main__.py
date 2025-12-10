@@ -84,3 +84,8 @@ print(style.rgb(255, 0, 255)("Pure magenta text (255, 0, 255)"))
 print(style.magenta("Default magenta for comparison"))
 print(style.rgb(255, 182, 193)("Light pink (255, 182, 193)"))
 print(style.rgb(255, 105, 180)("Hot pink (255, 105, 180)"))
+
+print("-" * 78)
+
+print("Test hyperlink support:")
+print(style.link("https://www.google.com")("Google it!"))

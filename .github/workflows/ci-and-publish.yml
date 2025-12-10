@@ -1,0 +1,106 @@
+name: CI (matrix) and Publish on tag
+
+# Triggers:
+# - push to main / PRs to main => run tests matrix
+# - push tags v* => run tests matrix and (if semver) publish after tests pass
+on:
+  push:
+    branches: ["main"]
+    tags:
+      - "v*"
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-and-publish-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build & test matrix
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv (reads pyproject.toml) and set Python
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "latest"
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+
+      - name: Sync dependencies (includes dev dependencies)
+        run: |
+          # create and populate a venv according to pyproject/uv.lock
+          uv sync --frozen
+
+      - name: Install package into environment (editable)
+        run: |
+          # install project so tests can import it
+          uv pip install -e .
+
+      - name: Lint with ruff
+        run: |
+          uv run --frozen ruff check .
+
+      - name: Run tests with pytest
+        run: |
+          uv run --frozen pytest -q
+
+      - name: Run mypy
+        run: |
+          # adjust args/path if your package layout differs (e.g., src/yourpkg)
+          uv run --frozen mypy --ignore-missing-imports .
+
+  publish:
+    name: Build & Publish (only for semver tags, after tests)
+    runs-on: ubuntu-latest
+    needs: build
+    # ensure this only runs for tag refs (pushes to tags trigger the workflow too)
+    if: startsWith(github.ref, 'refs/tags/')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify tag follows semver (vMAJOR.MINOR.PATCH, optional -prerelease)
+        run: |
+          echo "GITHUB_REF=${GITHUB_REF}"
+          if [[ ! "${GITHUB_REF}" =~ ^refs/tags/v[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.-]+)?$ ]]; then
+            echo "ERROR: Tag '${GITHUB_REF}' does not match required semver pattern vMAJOR.MINOR.PATCH (optional -prerelease)"
+            exit 1
+          fi
+          echo "Tag looks semver-like; continuing."
+
+      - name: Install uv and set Python for publishing
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "latest"
+          python-version: "3.11"
+          enable-cache: true
+
+      - name: Upgrade pip & install uv (safety)
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install uv
+
+      - name: Build distributions (uv build)
+        run: |
+          uv build --no-sources
+        working-directory: .
+
+      - name: Publish to PyPI (uv publish)
+        env:
+          UV_PUBLISH_USERNAME: ${{ secrets.UV_PUBLISH_USERNAME }}
+          UV_PUBLISH_PASSWORD: ${{ secrets.UV_PUBLISH_PASSWORD }}
+        run: |
+          # Uncomment to perform a dry-run first:
+          uv publish --dry-run
+          uv publish --no-progress
