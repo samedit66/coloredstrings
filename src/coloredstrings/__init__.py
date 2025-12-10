@@ -47,6 +47,7 @@ circle = style.circle
 overline = style.overline
 double_underline = style.double_underline
 visible = style.visible
+link = style.link
 
 color_mode = style.color_mode
 color256 = style.color256
@@ -95,6 +96,7 @@ __all__ = [
     "hidden",
     "inverse",
     "italic",
+    "link",
     "magenta",
     "on",
     "overline",

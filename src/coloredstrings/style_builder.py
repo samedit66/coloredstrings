@@ -42,6 +42,9 @@ class StyleBuilder:
     )
     """User-defined extension styles."""
 
+    url: Optional[str] = None
+    """URL address for `link` style."""
+
     def __call__(
         self,
         *args: Any,
@@ -59,6 +62,7 @@ class StyleBuilder:
             bg=self.bg,
             attrs=self.attrs,
             only_visible_if_colors_enabled=self.only_visible_if_colors_enabled,
+            url=self.url,
         )
 
     def color_mode(self, mode: types.ColorMode) -> StyleBuilder:
@@ -320,6 +324,9 @@ class StyleBuilder:
     @property
     def visible(self) -> StyleBuilder:
         return dataclasses.replace(self, only_visible_if_colors_enabled=True)
+
+    def link(self, url: str) -> StyleBuilder:
+        return dataclasses.replace(self, url=url)
 
     def extend(
         self,

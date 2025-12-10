@@ -20,6 +20,7 @@ def stylize(
     bg: typing.Optional[types.Color] = None,
     attrs: typing.Iterable[types.Attribute] = (),
     only_visible_if_colors_enabled: bool = False,
+    url: typing.Optional[str] = None,
 ) -> str:
     if mode == types.ColorMode.NO_COLOR or len(text) == 0:
         if only_visible_if_colors_enabled:
@@ -38,6 +39,14 @@ def stylize(
     if bg is not None:
         pairs.append(code_pair(bg, is_bg=True, mode=mode))
     pairs.extend(code_pair(a, False, mode) for a in attrs)
+
+    if url is not None:
+        pairs.append(
+            types.CodePair(
+                start=f"\x1b]8;;{url}\x1b\\",
+                end=f"\x1b]8;;\x1b\\",
+            )
+        )
 
     if not pairs:
         return text
