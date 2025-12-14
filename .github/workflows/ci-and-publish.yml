@@ -1,4 +1,4 @@
-name: CI (matrix) and Publish on tag
+name: ci
 
 # Triggers:
 # - push to main / PRs to main => run tests matrix
