@@ -261,3 +261,35 @@ def test_line_breaks_should_close_and_open_colors_multiple_occurrences(
     assert r(style.grey(" a \r\n b \n c \r\n d ", mode=ColorMode.ANSI_16)) == r(
         "\u001b[90m a \u001b[39m\r\n\u001b[90m b \u001b[39m\n\u001b[90m c \u001b[39m\r\n\u001b[90m d \u001b[39m"
     )
+
+
+def test_reset_in_disabled_mode(style: StyleBuilder) -> None:
+    plain = style.color_mode(ColorMode.NO_COLOR)
+    assert plain.reset() == ""
+    assert plain.red.reset("message") == "message"
+    assert plain.reset.visible("message") == ""
+
+
+def test_reset_preserves_nested_codes(style: StyleBuilder) -> None:
+    text = style.red("message")
+    assert style.reset(text) == "\x1b[0m" + text
+    assert style.reset.red("x") == "\x1b[0m\x1b[31mx\x1b[39m"
+
+
+def test_registered_styles_compose_in_the_callers_mode(style: StyleBuilder) -> None:
+    theme = style.extend(success=style.green, notice=style.red.bold.on.white)
+    assert theme.bold.success("x") == style.bold.green("x")
+    assert theme.on.success("x") == style.on.green("x")
+    assert theme.blue.notice("x") == style.red.bold.on.white("x")
+    assert theme.color_mode(ColorMode.NO_COLOR).notice("x") == "x"
+    assert theme.success.notice("x") == theme.notice("x")
+
+
+def test_unknown_attribute_uses_python_lookup(style: StyleBuilder) -> None:
+    import coloredstrings as cs
+
+    for target in (cs, style):
+        assert not hasattr(target, "missing_style")
+        assert getattr(target, "missing_style", None) is None
+    with pytest.raises(ValueError):
+        style.rgb("missing_style")

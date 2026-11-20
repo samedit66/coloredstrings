@@ -82,9 +82,9 @@ def test_detect_color_support__respects_force_color_3() -> None:
 
 
 @mock.patch.dict(os.environ, {"COLORTERM": "truecolor"}, clear=True)
-@mock.patch("sys.stdout.isatty", lambda: False)
-def test_detect_color_support__returns_no_color_suppot_for_non_tty() -> None:
-    assert detect_color_support(sys.stdout) == ColorMode.NO_COLOR
+def test_redirected_output_has_no_color() -> None:
+    with open(os.devnull, "w") as stream:
+        assert detect_color_support(stream) == ColorMode.NO_COLOR
 
 
 @mock.patch.dict(os.environ, {"TERM": "dumb"}, clear=True)
@@ -246,3 +246,11 @@ def test_detect_color_support__no_color_cli_flag() -> None:
 @mock.patch("sys.argv", ["--color"])
 def test_detect_color_support__color_cli_flag() -> None:
     assert detect_color_support() == ColorMode.ANSI_16
+
+
+@mock.patch.dict(os.environ, {}, clear=True)
+@mock.patch("platform.system", lambda: "Windows")
+@mock.patch("platform.version", lambda: "10.0.19045")
+def test_windows_redirected_output_has_no_color() -> None:
+    with open(os.devnull, "w") as stream:
+        assert detect_color_support(stream) == ColorMode.NO_COLOR

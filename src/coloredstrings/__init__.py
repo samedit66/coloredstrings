@@ -88,6 +88,7 @@ __all__ = [
     "dim",
     "double_underline",
     "encircle",
+    "extend",
     "faint",
     "framed",
     "gray",

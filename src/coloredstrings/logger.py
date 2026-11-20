@@ -1,3 +1,4 @@
+import copy
 import logging
 from typing import Literal, Optional
 
@@ -35,16 +36,13 @@ class ColoredFormatter(logging.Formatter):
         self.colorize_msg = colorize_msg
 
     def format(self, record: logging.LogRecord) -> str:
-        levelname = record.levelname
-        if self.colorize_level and record.levelno in _DEFAULT_LEVEL_COLORS:
-            level_rgb = _DEFAULT_LEVEL_COLORS[record.levelno]
-            record.levelname = level_rgb(levelname)
-
-        msg = record.getMessage()
-        if self.colorize_msg:
-            if record.levelno in _DEFAULT_LEVEL_COLORS:
-                msg_rgb = _DEFAULT_LEVEL_COLORS[record.levelno]
-                record.msg = msg_rgb(msg)
+        record = copy.copy(record)
+        color = _DEFAULT_LEVEL_COLORS.get(record.levelno)
+        if color is not None:
+            if self.colorize_level:
+                record.levelname = color(record.levelname)
+            if self.colorize_msg:
+                record.msg = color(record.getMessage())
                 record.args = ()
 
         return super().format(record)

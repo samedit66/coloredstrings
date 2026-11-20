@@ -6,7 +6,8 @@ _ANSI_ESCAPE = re.compile(
     r"""
     \x1B  # ESC
     (?:   # 7-bit C1 Fe (except CSI)
-        [@-Z\\-_]
+        \]8;[^\x1b\x07;]*;[^\x1b\x07]*(?:\x1b\\|\x07)  # OSC 8 hyperlink
+    |   [@-Z\\-_]
     |     # or [ for CSI, followed by a control sequence
         \[
         [0-?]*  # Parameter bytes

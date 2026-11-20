@@ -201,35 +201,34 @@ class StyleBuilder:
         return self._with_color(rgb)
 
     def __getattr__(self, color: str) -> StyleBuilder:
-        """
-        Treat unknown attributes as colors or registered extensions.
-
-        Lookup order:
-        1. If `self.extensions` contains `color`, use that value:
-           - `str` or `tuple` -> forwarded to `rgb` and returns a StyleBuilder.
-           - `callable` -> returned as-is (allowing custom helpers).
-        2. Otherwise treat `color` as a CSS/named/hex color and return `self.rgb(color)`.
-
-        Notes
-        -----
-        - Attribute names must be valid Python identifiers; use :meth:`rgb` for
-          names containing characters like `#`.
-        - Registered callables should accept the same kinds of arguments as other
-          style helpers if you plan to call them directly.
-
-        Example
-        -------
-        >>> s = StyleBuilder().extend(primary='blue', shout=StyleBuilder().red.bold)
-        >>> s.primary('ok')   # -> styled via rgb('blue')
-        >>> s.shout('hey')    # -> calls the registered callable
-        """
-        possible_extension = (self.extensions or {}).get(color)
-        if possible_extension is not None:
-            if isinstance(possible_extension, (str, tuple)):
-                return self.rgb(possible_extension)
-            return possible_extension
-
-        return self.rgb(color)
+        """Resolve a theme extension or a named color in the current chain."""
+        extensions = object.__getattribute__(self, "extensions")
+        extension = extensions.get(color)
+        if isinstance(extension, StyleBuilder):
+            style = self
+            if extension.fg is not None:
+                style = style._with_color(extension.fg)
+            return dataclasses.replace(
+                style,
+                bg=extension.bg if extension.bg is not None else style.bg,
+                attrs=style.attrs | extension.attrs,
+                next_color_for_bg=extension.next_color_for_bg
+                or style.next_color_for_bg,
+                only_visible_if_colors_enabled=(
+                    style.only_visible_if_colors_enabled
+                    or extension.only_visible_if_colors_enabled
+                ),
+                url=extension.url if extension.url is not None else style.url,
+                extensions={**extension.extensions, **extensions},
+            )
+        if isinstance(extension, (str, tuple)):
+            return self.rgb(extension)
+        if extension is not None:
+            return extension
+        try:
+            return self.rgb(color)
+        except ValueError:
+            raise AttributeError(color) from None
 
     def hex(self, color_code: str) -> StyleBuilder:
         warnings.warn(
@@ -345,7 +344,7 @@ class StyleBuilder:
 
         # Let's make a Bootstrap-like colored scheme
         style = StyleBuilder()
-        style = style.extends(
+        style = style.extend(
             primary="blue",
             secondary=(169, 169, 169),
             success=style.green,

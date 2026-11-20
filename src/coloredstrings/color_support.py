@@ -54,8 +54,16 @@ def detect_color_support(stream: typing.TextIO = sys.stdout) -> types.ColorMode:
     if os.environ.get("TERM", "").lower() == "dumb":
         return types.ColorMode.NO_COLOR
 
+    # isatty check (if stream doesn't have isatty, assume not a tty)
+    try:
+        is_tty = stream.isatty()
+    except Exception:
+        is_tty = False
+
     # 4) Windows heuristics
     if platform.system() == "Windows":
+        if not is_tty:
+            return types.ColorMode.NO_COLOR
         # platform.version() may be something like "10.0.19041"
         try:
             parts = platform.version().split(".")
@@ -100,13 +108,6 @@ def detect_color_support(stream: typing.TextIO = sys.stdout) -> types.ColorMode:
         if m:
             return types.ColorMode.ANSI_16
         return types.ColorMode.NO_COLOR
-
-    # 7) isatty check (if stream doesn't have isatty, assume not a tty)
-    is_tty = False
-    try:
-        is_tty = stream.isatty()
-    except Exception:
-        is_tty = False
 
     if not is_tty:
         return types.ColorMode.NO_COLOR

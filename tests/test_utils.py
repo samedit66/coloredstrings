@@ -47,3 +47,11 @@ def test_multiple_mixed_sequences_removed_completely():
 
 def test_strip_ansi_accepts_empty_string():
     assert utils.strip_ansi("") == ""
+
+
+def test_strip_ansi_removes_link_and_preserves_caption():
+    from coloredstrings import ColorMode, StyleBuilder
+
+    style = StyleBuilder(mode=ColorMode.ANSI_16)
+    caption = style.red.link("https://example.org")("docs")
+    assert utils.strip_ansi(f"See {caption} now") == "See docs now"

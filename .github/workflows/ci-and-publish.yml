@@ -59,10 +59,20 @@ jobs:
           # adjust args/path if your package layout differs (e.g., src/yourpkg)
           uv run --frozen mypy --ignore-missing-imports .
 
+  windows-redirect:
+    name: Check redirected output on Windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.13"
+      - run: uv run --frozen pytest -q tests/test_color_support.py -k redirected_output
+
   publish:
     name: Build & Publish (only for semver tags, after tests)
     runs-on: ubuntu-latest
-    needs: build
+    needs: [build, windows-redirect]
     # ensure this only runs for tag refs (pushes to tags trigger the workflow too)
     if: startsWith(github.ref, 'refs/tags/')
 

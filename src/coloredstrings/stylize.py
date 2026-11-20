@@ -7,9 +7,6 @@ _ESC = "\x1b["
 _RESET = _ESC + "0m"
 
 
-_RE_NESTED_RESET = re.compile(
-    rf"({re.escape(_ESC)}0m.*?{re.escape(_ESC)}0m)", flags=re.S
-)
 _RE_NEWLINE = re.compile(r"(\r?\n)")
 
 
@@ -22,23 +19,20 @@ def stylize(
     only_visible_if_colors_enabled: bool = False,
     url: typing.Optional[str] = None,
 ) -> str:
-    if mode == types.ColorMode.NO_COLOR or len(text) == 0:
-        if only_visible_if_colors_enabled:
-            return ""
+    if mode == types.ColorMode.NO_COLOR:
+        return "" if only_visible_if_colors_enabled else text
 
-        # Special case of reset - even when no text is passed,
-        # stylize still must return \x1b0m.
-        # This behavior follows `ansis`:
-        # https://github.com/webdiscus/ansis/tree/master?tab=readme-ov-file#edge-cases-input-arguments
-        if types.Attribute.RESET not in attrs:
-            return text
+    attrs = tuple(attrs)
+    reset = types.Attribute.RESET in attrs
+    if not text and (only_visible_if_colors_enabled or not reset):
+        return ""
 
     pairs = []
     if fg is not None:
         pairs.append(code_pair(fg, is_bg=False, mode=mode))
     if bg is not None:
         pairs.append(code_pair(bg, is_bg=True, mode=mode))
-    pairs.extend(code_pair(a, False, mode) for a in attrs)
+    pairs.extend(code_pair(a, False, mode) for a in attrs if a != types.Attribute.RESET)
 
     if url is not None:
         pairs.append(
@@ -49,7 +43,7 @@ def stylize(
         )
 
     if not pairs:
-        return text
+        return (_RESET if reset else "") + text
 
     start = "".join(p.start for p in pairs)
     # Close in reverse order to properly nest styles
@@ -65,12 +59,10 @@ def stylize(
     if _RESET in text:
         text = text.replace(_RESET, _RESET + start)
 
-    # Handle nested resets (segment starting+ending with RESET) by wrapping them with start/end
-    text = _RE_NESTED_RESET.sub(lambda m: end + m.group(1) + start, text)
     # Close and reopen styles around newlines so styles persist across lines
     text = _RE_NEWLINE.sub(lambda m: end + m.group(1) + start, text)
 
-    return f"{start}{text}{end}"
+    return (_RESET if reset else "") + start + text + end
 
 
 def code_pair(
