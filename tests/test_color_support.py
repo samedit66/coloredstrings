@@ -1,5 +1,6 @@
 import os
 import sys
+from pathlib import Path
 from unittest import mock
 
 from coloredstrings.color_support import _get_env_force_color, detect_color_support
@@ -82,8 +83,8 @@ def test_detect_color_support__respects_force_color_3() -> None:
 
 
 @mock.patch.dict(os.environ, {"COLORTERM": "truecolor"}, clear=True)
-def test_redirected_output_has_no_color() -> None:
-    with open(os.devnull, "w") as stream:
+def test_redirected_output_has_no_color(tmp_path: Path) -> None:
+    with (tmp_path / "output.txt").open("w") as stream:
         assert detect_color_support(stream) == ColorMode.NO_COLOR
 
 
@@ -251,6 +252,6 @@ def test_detect_color_support__color_cli_flag() -> None:
 @mock.patch.dict(os.environ, {}, clear=True)
 @mock.patch("platform.system", lambda: "Windows")
 @mock.patch("platform.version", lambda: "10.0.19045")
-def test_windows_redirected_output_has_no_color() -> None:
-    with open(os.devnull, "w") as stream:
+def test_windows_redirected_output_has_no_color(tmp_path: Path) -> None:
+    with (tmp_path / "output.txt").open("w") as stream:
         assert detect_color_support(stream) == ColorMode.NO_COLOR
