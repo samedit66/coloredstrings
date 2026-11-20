@@ -1,101 +1,166 @@
 # coloredstrings
 
-[![CI](https://github.com/samedit66/coloredstrings/actions/workflows/ci-and-publish.yml/badge.svg)](https://github.com/samedit66/coloredstrings/actions/workflows/ci-and-publish.yml)
-[![PyPI](https://img.shields.io/pypi/v/coloredstrings)](https://pypi.org/project/coloredstrings/)
-[![Python versions](https://img.shields.io/pypi/pyversions/coloredstrings)](https://pypi.org/project/coloredstrings/)
-[![License](https://img.shields.io/pypi/l/coloredstrings)](LICENSE)
+[![Python package](https://github.com/samedit66/coloredstrings/actions/workflows/ci-and-publish.yml/badge.svg)](https://github.com/samedit66/coloredstrings/actions/workflows/ci-and-publish.yml)
+[![PyPI Downloads](https://static.pepy.tech/personalized-badge/coloredstrings?period=total&units=ABBREVIATION&left_color=BLACK&right_color=MAGENTA&left_text=downloads)](https://pepy.tech/projects/coloredstrings)
+[![PyPI version](https://img.shields.io/pypi/v/coloredstrings.svg?logo=pypi&logoColor=FFE873)](https://pypi.org/project/coloredstrings)
+[![Supported Python versions](https://img.shields.io/pypi/pyversions/coloredstrings.svg?logo=python&logoColor=FFE873)](https://pypi.org/project/coloredstrings)
+[![Licence](https://img.shields.io/github/license/samedit66/coloredstrings.svg)](https://github.com/samedit66/coloredstrings/blob/main/LICENSE)
+[![Code style: Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](https://mypy-lang.org/)
 
-Build terminal styles in Python and call them to get a string. The package supports Python 3.9 and later and has no runtime dependencies.
+`cs.white.on.red(" FAIL ")` reads about the way it looks. Give that style a name and you can use it anywhere your Python program builds a string.
 
 ```python
 import coloredstrings as cs
 
-error = cs.bold.red
-print(error("Error"), "Could not open the file")
-print(cs.white.on.blue(" INFO "), "Configuration loaded")
+passed = cs.green("PASS")
+failed = cs.white.on.red.bold(" FAIL ")
+
+print(passed, "test_read_config")
+print(failed, "test_missing_key")
+print(cs.dim(f"  expected {cs.yellow('port')} in server.toml"))
 ```
 
-![Terminal output showing coloredstrings styles](https://github.com/samedit66/coloredstrings/blob/main/media/preview.png?raw=true)
+![Python terminal session showing a green PASS, a white-on-red FAIL, and the missing key port highlighted in yellow](https://raw.githubusercontent.com/samedit66/coloredstrings/dev/media/preview.gif)
 
-## Installation
+## What you get
+
+- **Styles you can keep.** Save `warning = cs.yellow`, then use `warning.bold` for the heading and `warning` for the rest.
+- **Nested colors.** In the example above, `port` is yellow. You can also put a red word inside a blue sentence, and the rest of the sentence picks up the outer blue again.
+- **16 colors, 256 colors, and truecolor.** Use the terminal palette, a hex value, or a name like `coral`. On terminals with fewer colors, coloredstrings picks a fallback.
+- **Plain text when you need it.** Respect `--no-color` at the command line, force a mode in a test, or strip the styling from a string you already have.
+- Named themes, clickable links, and a formatter for Python’s `logging` module. No runtime dependencies.
+
+## Install it and see the colors
+
+**We recommend uv.** From your project directory, add coloredstrings and run the terminal sampler.
+
+```sh
+uv add coloredstrings
+uv run python -m coloredstrings
+```
+
+**With pip**, run these commands in your virtual environment.
 
 ```sh
 python -m pip install coloredstrings
 python -m coloredstrings
 ```
 
-The second command runs a demo in your terminal. To try the development version, install with `python -m pip install git+https://github.com/samedit66/coloredstrings.git`.
+The sampler shows what your terminal theme does with `bright_black` and whether it draws a double underline. Requires Python 3.9 or later.
 
-## Compose and reuse styles
+## Working with styles
 
-Each step returns a new style. You can save a chain, extend it, or import a style directly. Calling a style converts its arguments to strings and joins them with a space. Set `sep` to choose a different separator.
+### Foreground, background, and emphasis
 
-```python
-from coloredstrings import blue
-
-label = blue.bold
-print(label("Job", 42, sep="#"))
-print(blue("The job is running"))
-```
-
-Use `.on` to apply the next color to the background. If you set the foreground or background more than once, the last color for that part wins. Attributes such as bold and underline can be combined. To style a word inside a longer message, use an f-string. The outer color resumes after the word.
+Start with a color or an attribute. Use `.on` when you want the next color to paint the background.
 
 ```python
 import coloredstrings as cs
 
-print(cs.yellow(f"Retrying {cs.bold.red('upload')} in five seconds"))
-print(cs.on.blue.white.underline("Download"))
+print(cs.red("deleted"))
+print(cs.black.on.yellow(" modified "))
+print(cs.on.blue.white.bold(" selected "))
 ```
 
-## Colors and attributes
+Foreground and background are independent. In `cs.on.blue.white`, blue goes behind the text and white goes in front. If you set the same part twice, the last color wins.
 
-| Color | Example |
+Calling a style works much like `print`. It converts its arguments to strings and joins them with a space. You get the resulting string back, so you decide where it goes.
+
+```python
+from coloredstrings import cyan
+
+issue = cyan("issue", 42, sep="#")
+print(f"Changes requested on {issue}")
+```
+
+### Choosing a color
+
+| If you have… | Write |
 | --- | --- |
-| Terminal palette | `cs.red`, `cs.bright_red`, `cs.on.blue` |
-| 256-color palette | `cs.color256(37)`, `cs.on.color256(240)` |
-| RGB components or tuple | `cs.rgb(64, 128, 255)`, `cs.rgb((64, 128, 255))` |
-| Hex string | `cs.rgb("#4080ff")`, `cs.on.rgb("#fc0")` |
-| Named RGB color | `cs.rgb("coral")`, `cs.coral` |
+| A terminal color | `cs.red`, `cs.bright_red`, `cs.on.red` |
+| A palette index | `cs.color256(208)`, `cs.on.color256(235)` |
+| An RGB value | `cs.rgb(255, 127, 80)` or `cs.rgb((255, 127, 80))` |
+| A hex value | `cs.rgb("#ff7f50")` or `cs.rgb("#fc0")` |
+| A named color | `cs.coral` or `cs.rgb("coral")` |
 
-RGB components and 256-color indices must be integers from 0 through 255, inclusive. Starting with 3.4.0, an out-of-range value raises `ValueError` when you create the style, including when colors are disabled. An RGB tuple must contain exactly three components. Floats, booleans, and other non-integer component or index values raise `TypeError`. For colors registered with `extend`, validation runs when you select the named style.
+The eight base colors are `black`, `red`, `green`, `yellow`, `blue`, `magenta`, `cyan`, and `white`. Each has a `bright_` variant. Both `gray` and `grey` select `bright_black`.
 
-The eight base colors are `black`, `red`, `green`, `yellow`, `blue`, `magenta`, `cyan`, and `white`. Each has a `bright_` variant. Both `gray` and `grey` select `bright_black`. Palette colors follow the terminal theme. For a specific RGB value, use `rgb`. For example, `cs.red` uses the terminal's red and `cs.rgb("red")` requests CSS red.
+There’s a reason to keep both `cs.red` and `cs.rgb("red")` around. The first uses the red from the reader’s terminal theme. The second asks for `#ff0000`. Use the former for a conventional error message and the latter when the shade itself matters.
 
-| Effect | Attributes |
+In 3.4, RGB components and palette indices accept integers from `0` to `255` inclusive. An out-of-range value raises `ValueError` when you build the style, even with colors disabled. Floats and booleans raise `TypeError`. An RGB tuple takes exactly three components.
+
+### Text attributes
+
+| Effect | Names |
 | --- | --- |
-| Weight and emphasis | `bold`, `dim` (also `faint` or `dark`), `italic` |
+| Weight and emphasis | `bold`, `dim` (also `faint`, `dark`), `italic` |
 | Lines | `underline`, `double_underline`, `overline`, `strike` (also `strikethrough`) |
-| Display | `inverse` (also `reverse`), `hidden` (also `concealed`) |
-| Terminal-dependent effects | `blink` (also `slow_blink`), `rapid_blink`, `framed`, `encircle` (also `circle`) |
+| Inversion and concealment | `inverse` (also `reverse`), `hidden` (also `concealed`) |
+| Other terminal effects | `blink` (also `slow_blink`), `rapid_blink`, `framed`, `encircle` (also `circle`) |
 
-`cs.visible("◆ ")` produces an empty string when colors are disabled. Use it for optional decoration. `cs.reset()` emits a reset sequence when colors are enabled.
+Two helpers are worth calling out. `cs.reset()` emits an ANSI reset when styling is enabled. `cs.visible("● ")` gives you a decorative marker that disappears entirely when colors are off. Terminal support varies for effects such as blink and framing.
 
-## Define a theme
+### Give your application its own vocabulary
 
-Use `extend` to name styles for your application. Pass keyword arguments or a dictionary. Values can be named or hex colors, RGB tuples, or existing styles. Theme styles combine with the current chain and use its color mode.
+For a single reusable style, an assignment is enough. When several commands share a palette, `extend()` lets you name styles after what they mean in your application.
 
 ```python
 import coloredstrings as cs
 
-theme = cs.extend(success=cs.green, warning="#ffa500", detail=(150, 150, 150))
-print(theme.bold.success("Saved"))
-print(theme.warning("Disk space is low"))
-print(theme.color_mode(cs.ColorMode.NO_COLOR).success("Saved"))
+diff = cs.extend(added=cs.green, removed=cs.red, hunk="#8a72d6")
+
+print(diff.hunk("@@ -1 +1 @@"))
+print(diff.removed("- timeout = 3"))
+print(diff.added("+ timeout = 10"))
 ```
 
-## Color modes and output streams
+Theme entries can be styles, color names, hex strings, or RGB tuples. `extend()` accepts a dictionary as well as keyword arguments. You can still write `diff.bold.added`, and `diff.color_mode(cs.ColorMode.NO_COLOR)` gives you a plain-text version of the whole theme.
 
-By default, the module selects a mode for standard output at import time. It considers command-line flags, environment variables, the platform, and the terminal. RGB colors fall back to 256 or 16 colors according to the selected mode.
+### Terminal links and plain text
 
-| Setting, in order of precedence | Effect |
+A terminal that supports OSC 8 hyperlinks can make an issue number clickable. The same label can go into a plain-text report.
+
+```python
+import coloredstrings as cs
+
+issue = cs.underline.link("https://github.com/samedit66/coloredstrings/issues")("issues")
+print(f"Report a bug under {issue}.")
+assert cs.strip_ansi(issue) == "issues"
+```
+
+### Color in the console, plain text in the log
+
+Attach `ColoredFormatter` to the handler that writes to the terminal. By default it colors the level name. Set `colorize_msg=True` to color the message as well, or `colorize_level=False` to leave the level name alone.
+
+```python
+import logging
+
+from coloredstrings.logger import ColoredFormatter
+
+console = logging.StreamHandler()
+console.setFormatter(ColoredFormatter("%(levelname)s  %(message)s"))
+
+log = logging.getLogger("backup")
+log.addHandler(console)
+log.warning("Skipping locked file %s", "index.db")
+```
+
+A file handler attached to the same logger receives the original record, including its message template and arguments. The formatter uses the color mode detected for standard output when its module is imported.
+
+### Who decides whether to use color?
+
+By default, coloredstrings checks standard output at import time. For a command-line program, the overrides below take precedence in the order shown.
+
+| Setting | Effect |
 | --- | --- |
-| `--no-color`, `--color` | Disable colors or select 16 colors. If both are present, `--no-color` wins. |
-| `FORCE_COLOR` | `0` disables colors. `1`, `2`, and `3` select 16 colors, 256 colors, and truecolor. An empty value or `true` selects 16 colors. `false` disables colors. |
-| `NO_COLOR` | A nonempty value disables colors. |
-| `CLICOLOR_FORCE` | Accepts the same values as `FORCE_COLOR`. |
-| `CLICOLOR` | A nonempty value selects 16 colors on a terminal and disables colors for a redirected stream. |
+| `--no-color`, `--color` | Disable styling or select 16 colors. `--no-color` wins if both are present. |
+| `FORCE_COLOR` | `0` disables styling, `1` selects 16 colors, `2` selects 256, and `3` selects truecolor. An empty value or `true` selects 16 colors. `false` disables styling. |
+| `NO_COLOR` | A nonempty value disables styling. |
+| `CLICOLOR_FORCE` | Takes the same values as `FORCE_COLOR`. |
+| `CLICOLOR` | A nonempty value selects 16 colors on a terminal and plain text on a redirected stream. |
 
-Use `color_mode` to set a mode for a chain, or pass `mode=` for one call. For a different output stream, detect its mode explicitly.
+If you know the destination, you can choose the mode yourself. This is particularly useful when a command writes data to stdout and diagnostics to stderr.
 
 ```python
 import sys
@@ -104,42 +169,41 @@ import coloredstrings as cs
 from coloredstrings.color_support import detect_color_support
 
 errors = cs.color_mode(detect_color_support(sys.stderr))
-print(errors.red("Could not open the file"), file=sys.stderr)
-assert cs.red("Ready", mode=cs.ColorMode.NO_COLOR) == "Ready"
+print(errors.red("Permission denied"), file=sys.stderr)
 ```
 
-The available modes are `NO_COLOR`, `ANSI_16`, `EXTENDED_256`, and `TRUE_COLOR` on `cs.ColorMode`.
+Use `color_mode()` for a chain or `mode=` for one call. The available modes are `NO_COLOR`, `ANSI_16`, `EXTENDED_256`, and `TRUE_COLOR` on `cs.ColorMode`. For example, a test can assert `cs.red("failed", mode=cs.ColorMode.NO_COLOR) == "failed"` on any machine.
 
-## Links and plain text
+## Coming from another library?
 
-Use `link(url)` to make a caption clickable in terminals that support OSC 8 hyperlinks. Use `strip_ansi` to keep the visible text for a plain-text destination.
+Here’s how each library spells the same small job: a white `FAIL` label on a red background.
+
+| Library | What you’d write |
+| --- | --- |
+| **coloredstrings** | `cs.white.on.red(" FAIL ")` |
+| [ansis](https://github.com/webdiscus/ansis#usage) · JavaScript | ``white.bgRed` FAIL ` `` |
+| [yachalk](https://github.com/bluenote10/yachalk#usage) · Python | `chalk.white.bg_red(" FAIL ")` |
+| [termcolor](https://github.com/termcolor/termcolor#example) · Python | `colored(" FAIL ", "white", "on_red")` |
+| [Colorama](https://github.com/tartley/colorama#colored-output) · Python | `Fore.WHITE + Back.RED + " FAIL " + Style.RESET_ALL` |
+| [Rich](https://github.com/Textualize/rich#using-the-console) · Python | `console.print(" FAIL ", style="white on red")` |
+
+If you use **ansis** or **yachalk**, chains and nested expressions will feel familiar. The spelling to remember here is `.on`: it works with `.red`, `.color256(208)`, and `.rgb("#ff7f50")` alike. **termcolor** also accepts RGB tuples. In coloredstrings you can give that RGB style a name, add `.bold` where needed, and use it throughout a command.
+
+## How the chain works
+
+`cs.red` is a callable `StyleBuilder`. Adding `.bold` creates a new builder. The original is still useful, which matters when two messages share a color but only one of them needs emphasis.
 
 ```python
 import coloredstrings as cs
 
-docs = cs.blue.underline.link("https://docs.python.org/")("Python documentation")
-print(docs)
-assert cs.strip_ansi(docs) == "Python documentation"
+filename = cs.cyan
+current_file = filename.bold
+
+print(filename("defaults.toml"))
+print(current_file("local.toml"))
+print(filename("overrides.toml"))
 ```
 
-## Logging
+The ANSI codes are assembled when you call the style. The builder opens the foreground, background, and attributes around your text, then closes them in reverse order. With nested colors, it restores the outer color after the inner one closes. Across a line break, it closes and reopens the style so a background stays with its line. [StyleBuilder](https://github.com/samedit66/coloredstrings/blob/dev/src/coloredstrings/style_builder.py) · [ANSI rendering](https://github.com/samedit66/coloredstrings/blob/dev/src/coloredstrings/stylize.py)
 
-Attach `ColoredFormatter` to a standard logging handler. By default, it colors the level name. Set `colorize_msg=True` to color the message too, or `colorize_level=False` to leave the level name plain. Other handlers can format the same record independently.
-
-```python
-import logging
-
-from coloredstrings.logger import ColoredFormatter
-
-console = logging.StreamHandler()
-console.setFormatter(ColoredFormatter("%(levelname)s %(message)s"))
-logger = logging.getLogger("example")
-logger.addHandler(console)
-logger.warning("Retrying job %s", 42)
-```
-
-The formatter uses the color mode detected for standard output when its module is imported.
-
-## Contributing
-
-Install the development dependencies with `uv sync --frozen`. Run `uv run pytest`, `uv run ruff check .`, and `uv run mypy` before submitting a change. Include a regression test when fixing output or color detection.
+Working on a rendering bug? Include the smallest expression that shows it and the color mode you used. `repr(result)` makes a reset code much easier to spot in an issue. To run the suite locally, use `uv sync --frozen` followed by `uv run pytest`. [Report an issue](https://github.com/samedit66/coloredstrings/issues)
