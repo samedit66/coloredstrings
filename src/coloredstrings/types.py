@@ -72,9 +72,19 @@ class Ansi16Color(enum.Enum):
         return Ansi16Code(self.value.start + 10, BG_RESET)
 
 
+def _validate_color_byte(value: int, name: str) -> None:
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise TypeError(f"{name} must be an integer")
+    if not 0 <= value <= 255:
+        raise ValueError(f"{name} must be between 0 and 255, got {value}")
+
+
 @dataclasses.dataclass(frozen=True)
 class Extended256:
     index: int
+
+    def __post_init__(self) -> None:
+        _validate_color_byte(self.index, "Palette index")
 
 
 @dataclasses.dataclass(frozen=True)
@@ -82,6 +92,11 @@ class Rgb:
     r: int
     g: int
     b: int
+
+    def __post_init__(self) -> None:
+        _validate_color_byte(self.r, "Red component")
+        _validate_color_byte(self.g, "Green component")
+        _validate_color_byte(self.b, "Blue component")
 
 
 Color = typing.Union[Ansi16Color, Extended256, Rgb]

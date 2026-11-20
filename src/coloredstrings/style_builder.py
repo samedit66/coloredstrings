@@ -153,41 +153,10 @@ class StyleBuilder:
         g: Optional[int] = None,
         b: Optional[int] = None,
     ) -> StyleBuilder:
-        """
-        Adds RGB color.
+        """Select an RGB color by name, hex string, tuple, or three integers.
 
-        Possible calls of this method looks like:
-        - `rgb('#f0f8ff')`
-        - `rgb(0, 255, 255)`
-        - `rgb((127, 255, 212))`
-        - `rgb('mediumaquamarine')`
-
-        Note, that `g` and `b` matter only when the first argument has type of `int`.
-        Otherwise, they are ignored.
-
-        Parameters
-        ----------
-        color : Union[int, str, Tuple[int, int, int]]
-            One of:
-            - a three-component tuple `(r, g, b)` with integer components in 0–255,
-            - an `int` interpreted as the red component (in this case `g` and `b`
-              must be supplied),
-            - a CSS/hex color string (for example `'#ff00aa'`, `'fuchsia'`, or
-              other CSS named colors).
-        g : Optional[int]
-            Green component when `color` is provided as an `int`. Ignored otherwise.
-        b : Optional[int]
-            Blue component when `color` is provided as an `int`. Ignored otherwise.
-
-        Returns
-        -------
-        StyleBuilder
-            A new StyleBuilder instance with the specified RGB color applied.
-
-        Raises
-        ------
-        ValueError
-            If `color` is an `int` but either `g` or `b` is not provided.
+        Components must be integers from 0 through 255. The optional green
+        and blue arguments are used only with an integer first argument.
         """
         if isinstance(color, int):
             if g is None or b is None:
@@ -195,9 +164,13 @@ class StyleBuilder:
 
             rgb = types.Rgb(r=color, g=g, b=b)
         elif isinstance(color, tuple):
-            rgb = types.Rgb(r=color[0], g=color[1], b=color[2])
-        else:
+            if len(color) != 3:
+                raise ValueError("An RGB tuple must contain exactly three components")
+            rgb = types.Rgb(*color)
+        elif isinstance(color, str):
             rgb = utils.rgb_from_hex_or_named_color(color)
+        else:
+            raise TypeError("Expected an RGB tuple, a color string, or three integers")
         return self._with_color(rgb)
 
     def __getattr__(self, color: str) -> StyleBuilder:

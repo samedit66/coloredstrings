@@ -293,3 +293,39 @@ def test_unknown_attribute_uses_python_lookup(style: StyleBuilder) -> None:
         assert getattr(target, "missing_style", None) is None
     with pytest.raises(ValueError):
         style.rgb("missing_style")
+
+
+@pytest.mark.parametrize("mode", list(ColorMode))
+def test_color_bounds_are_checked_when_style_is_created(mode):
+    style = StyleBuilder(mode=mode)
+    assert style.rgb(0, 255, 0)("x") == style.rgb("#00ff00")("x")
+    assert style.on.rgb((255, 0, 255))("x") == style.on.rgb("#ff00ff")("x")
+    for invalid in (-1, 256):
+        with pytest.raises(ValueError, match="0.*255"):
+            style.color256(invalid)
+        with pytest.raises(ValueError, match="0.*255"):
+            style.on.rgb(invalid, 0, 0)
+        with pytest.raises(ValueError, match="0.*255"):
+            style.rgb((0, invalid, 0))
+        with pytest.raises(ValueError, match="0.*255"):
+            style.extend(accent=(0, 0, invalid)).accent
+
+
+@pytest.mark.parametrize("value", [1.5, "7", True, None])
+def test_color_channels_and_palette_indices_require_integers(style, value):
+    with pytest.raises(TypeError):
+        style.color256(value)
+    with pytest.raises(TypeError):
+        style.rgb((0, 0, value))
+
+
+@pytest.mark.parametrize("color", [(), (12, 34), (12, 34, 56, 78)])
+def test_rgb_tuple_requires_three_components(style, color):
+    with pytest.raises(ValueError, match="three"):
+        style.rgb(color)
+
+
+def test_palette_endpoints_are_valid():
+    style = StyleBuilder(mode=ColorMode.EXTENDED_256)
+    assert style.on.color256(0)("x") == "\x1b[48;5;0mx\x1b[49m"
+    assert style.color256(255)("x") == "\x1b[38;5;255mx\x1b[39m"

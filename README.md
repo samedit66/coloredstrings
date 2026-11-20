@@ -57,6 +57,8 @@ print(cs.on.blue.white.underline("Download"))
 | Hex string | `cs.rgb("#4080ff")`, `cs.on.rgb("#fc0")` |
 | Named RGB color | `cs.rgb("coral")`, `cs.coral` |
 
+RGB components and 256-color indices must be integers from 0 through 255, inclusive. Starting with 3.4.0, an out-of-range value raises `ValueError` when you create the style, including when colors are disabled. An RGB tuple must contain exactly three components. Floats, booleans, and other non-integer component or index values raise `TypeError`. For colors registered with `extend`, validation runs when you select the named style.
+
 The eight base colors are `black`, `red`, `green`, `yellow`, `blue`, `magenta`, `cyan`, and `white`. Each has a `bright_` variant. Both `gray` and `grey` select `bright_black`. Palette colors follow the terminal theme. For a specific RGB value, use `rgb`. For example, `cs.red` uses the terminal's red and `cs.rgb("red")` requests CSS red.
 
 | Effect | Attributes |
