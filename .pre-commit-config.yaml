@@ -9,29 +9,24 @@ repos:
     - id: check-yaml
     - id: check-added-large-files
 
-# Ruff: linter + formatter
-- repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.13.3
-  hooks:
-    - id: ruff-check
-      # run auto-fixes where possible
-      args: ["--select", "I,RUF022", "--fix"]
-    - id: ruff-format
-
-# mypy
+# Use the project's locked tools for the same checks as make check.
 - repo: local
   hooks:
-    - id: mypy
-      name: mypy (local)
-      entry: scripts/run-mypy
-      language: python
-      # Use the Python version you target in CI/dev
-      language_version: python3.9
-      # Install mypy into the hook environment.
-      additional_dependencies: ["mypy==1.17.0"]
-      types: [python]
-      require_serial: true
-      # pre-commit normally passes filenames; our script ignores them,
-      # so disable passing filenames to avoid accidental behavior:
+    - id: ruff-check
+      name: Ruff lint
+      entry: uv run --frozen ruff check --fix .
+      language: system
+      files: '(\.pyi?$|^(pyproject\.toml|uv\.lock|\.pre-commit-config\.yaml)$)'
       pass_filenames: false
-      verbose: true
+    - id: ruff-format
+      name: Ruff format
+      entry: uv run --frozen ruff format .
+      language: system
+      files: '(\.pyi?$|^(pyproject\.toml|uv\.lock|\.pre-commit-config\.yaml)$)'
+      pass_filenames: false
+    - id: mypy
+      name: mypy
+      entry: uv run --frozen mypy
+      language: system
+      files: '(\.pyi?$|^(pyproject\.toml|uv\.lock|\.pre-commit-config\.yaml)$)'
+      pass_filenames: false

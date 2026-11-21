@@ -1,6 +1,6 @@
 import dataclasses
 import enum
-import typing
+from typing import TypeAlias
 
 
 @dataclasses.dataclass(frozen=True)
@@ -99,7 +99,7 @@ class Rgb:
         _validate_color_byte(self.b, "Blue component")
 
 
-Color = typing.Union[Ansi16Color, Extended256, Rgb]
+Color: TypeAlias = Ansi16Color | Extended256 | Rgb
 
 
 class ColorMode(enum.IntEnum):

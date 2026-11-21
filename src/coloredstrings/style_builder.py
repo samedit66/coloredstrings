@@ -2,27 +2,23 @@ from __future__ import annotations
 
 import dataclasses
 import warnings
-from typing import (
-    Any,
-    Dict,
-    FrozenSet,
-    Optional,
-    Tuple,
-    Union,
-)
+from collections.abc import Mapping
+from typing import TextIO, TypeAlias, overload
 
 from coloredstrings import color_support, stylize, types, utils
+
+RgbTuple: TypeAlias = tuple[int, int, int]
 
 
 @dataclasses.dataclass(frozen=True)
 class StyleBuilder:
-    fg: Optional[types.Color] = None
+    fg: types.Color | None = None
     """Foreground color."""
 
-    bg: Optional[types.Color] = None
+    bg: types.Color | None = None
     """Background color."""
 
-    attrs: FrozenSet[types.Attribute] = dataclasses.field(default_factory=frozenset)
+    attrs: frozenset[types.Attribute] = dataclasses.field(default_factory=frozenset)
     """Styling attributes (bold, italic, etc.)."""
 
     next_color_for_bg: bool = False
@@ -36,20 +32,22 @@ class StyleBuilder:
     only_visible_if_colors_enabled: bool = False
     """Used for `visible` style: whether the text should be replaced with an empty string when colors are not available."""
 
-    # This annotation hurts me very much...
-    extensions: Dict[str, Union[str, Tuple[int, int, int], StyleBuilder]] = (
-        dataclasses.field(default_factory=dict)
-    )
+    extensions: dict[str, StyleExtension] = dataclasses.field(default_factory=dict)
     """User-defined extension styles."""
 
-    url: Optional[str] = None
+    url: str | None = None
     """URL address for `link` style."""
+
+    @classmethod
+    def for_stream(cls, stream: TextIO) -> StyleBuilder:
+        """Create styles using the color mode detected for this output stream."""
+        return cls(mode=color_support.detect_color_support(stream))
 
     def __call__(
         self,
-        *args: Any,
+        *args: object,
         sep: str = " ",
-        mode: Optional[types.ColorMode] = None,
+        mode: types.ColorMode | None = None,
     ) -> str:
         if mode is None:
             mode = self.mode
@@ -147,11 +145,22 @@ class StyleBuilder:
     def color256(self, index: int) -> StyleBuilder:
         return self._with_color(types.Extended256(index=index))
 
+    @overload
+    def rgb(self, color: int, g: int, b: int) -> StyleBuilder: ...
+
+    @overload
     def rgb(
         self,
-        color: Union[int, str, Tuple[int, int, int]],
-        g: Optional[int] = None,
-        b: Optional[int] = None,
+        color: str | RgbTuple,
+        g: int | None = None,
+        b: int | None = None,
+    ) -> StyleBuilder: ...
+
+    def rgb(
+        self,
+        color: int | str | RgbTuple,
+        g: int | None = None,
+        b: int | None = None,
     ) -> StyleBuilder:
         """Select an RGB color by name, hex string, tuple, or three integers.
 
@@ -175,25 +184,12 @@ class StyleBuilder:
 
     def __getattr__(self, color: str) -> StyleBuilder:
         """Resolve a theme extension or a named color in the current chain."""
-        extensions = object.__getattribute__(self, "extensions")
+        extensions: dict[str, StyleExtension] = object.__getattribute__(
+            self, "extensions"
+        )
         extension = extensions.get(color)
         if isinstance(extension, StyleBuilder):
-            style = self
-            if extension.fg is not None:
-                style = style._with_color(extension.fg)
-            return dataclasses.replace(
-                style,
-                bg=extension.bg if extension.bg is not None else style.bg,
-                attrs=style.attrs | extension.attrs,
-                next_color_for_bg=extension.next_color_for_bg
-                or style.next_color_for_bg,
-                only_visible_if_colors_enabled=(
-                    style.only_visible_if_colors_enabled
-                    or extension.only_visible_if_colors_enabled
-                ),
-                url=extension.url if extension.url is not None else style.url,
-                extensions={**extension.extensions, **extensions},
-            )
+            return self._with_extension(extension)
         if isinstance(extension, (str, tuple)):
             return self.rgb(extension)
         if extension is not None:
@@ -202,6 +198,23 @@ class StyleBuilder:
             return self.rgb(color)
         except ValueError:
             raise AttributeError(color) from None
+
+    def _with_extension(self, extension: StyleBuilder) -> StyleBuilder:
+        style = self
+        if extension.fg is not None:
+            style = style._with_color(extension.fg)
+        return dataclasses.replace(
+            style,
+            bg=extension.bg if extension.bg is not None else style.bg,
+            attrs=style.attrs | extension.attrs,
+            next_color_for_bg=extension.next_color_for_bg or style.next_color_for_bg,
+            only_visible_if_colors_enabled=(
+                style.only_visible_if_colors_enabled
+                or extension.only_visible_if_colors_enabled
+            ),
+            url=extension.url if extension.url is not None else style.url,
+            extensions={**extension.extensions, **self.extensions},
+        )
 
     def hex(self, color_code: str) -> StyleBuilder:
         warnings.warn(
@@ -270,7 +283,7 @@ class StyleBuilder:
         return self._with_attrs(types.Attribute.STRIKE)
 
     @property
-    def strikethrough(self):
+    def strikethrough(self) -> StyleBuilder:
         return self.strike
 
     @property
@@ -302,10 +315,8 @@ class StyleBuilder:
 
     def extend(
         self,
-        style_dict: Optional[
-            Dict[str, Union[str, Tuple[int, int, int], StyleBuilder]]
-        ] = None,
-        **styles,
+        style_dict: Mapping[str, StyleExtension] | None = None,
+        **styles: StyleExtension,
     ) -> StyleBuilder:
         """
         Extends `StyleBuilder` with new styles.
@@ -329,7 +340,7 @@ class StyleBuilder:
         Parameters
         ----------
         style_dict :
-            Optional dict of style-name -> color. Colors can be CSS/named
+            Optional mapping of style-name -> color. Colors can be CSS/named
             strings (e.g. `'fuchsia'` or `'#ff00aa'`), RGB tuples like (r, g, b)
             or `StyleBuilder` instances.
         **styles :
@@ -353,19 +364,10 @@ class StyleBuilder:
     def _with_attrs(self, *attrs: types.Attribute) -> StyleBuilder:
         return dataclasses.replace(self, attrs=self.attrs.union(attrs))
 
-    def _with_color(
-        self, color: Union[types.Ansi16Color, types.Extended256, types.Rgb]
-    ) -> StyleBuilder:
-        fg = self.fg
-        bg = self.bg
-        next_color_for_bg = self.next_color_for_bg
+    def _with_color(self, color: types.Color) -> StyleBuilder:
+        if self.next_color_for_bg:
+            return dataclasses.replace(self, bg=color, next_color_for_bg=False)
+        return dataclasses.replace(self, fg=color)
 
-        if next_color_for_bg:
-            bg = color
-            next_color_for_bg = False
-        else:
-            fg = color
 
-        return dataclasses.replace(
-            self, fg=fg, bg=bg, next_color_for_bg=next_color_for_bg
-        )
+StyleExtension: TypeAlias = str | RgbTuple | StyleBuilder

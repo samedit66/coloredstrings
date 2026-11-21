@@ -1,5 +1,5 @@
 import re
-import typing
+from collections.abc import Iterable
 
 from coloredstrings import ansi_conversions, types
 
@@ -13,11 +13,11 @@ _RE_NEWLINE = re.compile(r"(\r?\n)")
 def stylize(
     text: str,
     mode: types.ColorMode = types.ColorMode.EXTENDED_256,
-    fg: typing.Optional[types.Color] = None,
-    bg: typing.Optional[types.Color] = None,
-    attrs: typing.Iterable[types.Attribute] = (),
+    fg: types.Color | None = None,
+    bg: types.Color | None = None,
+    attrs: Iterable[types.Attribute] = (),
     only_visible_if_colors_enabled: bool = False,
-    url: typing.Optional[str] = None,
+    url: str | None = None,
 ) -> str:
     if mode == types.ColorMode.NO_COLOR:
         return "" if only_visible_if_colors_enabled else text
@@ -66,7 +66,7 @@ def stylize(
 
 
 def code_pair(
-    style: typing.Union[types.Attribute, types.Color],
+    style: types.Attribute | types.Color,
     is_bg: bool = False,
     mode: types.ColorMode = types.ColorMode.EXTENDED_256,
 ) -> types.CodePair:
@@ -86,23 +86,19 @@ def code_pair(
     if isinstance(style, types.Ansi16Color):
         code = str((style.as_bg() if is_bg else style.value).start)
 
-    elif isinstance(style, types.Extended256):
+    elif isinstance(style, types.Rgb) and mode == types.ColorMode.TRUE_COLOR:
+        code = f"{prefix};2;{style.r};{style.g};{style.b}"
+    else:
+        index = (
+            ansi_conversions.rgb_to_ansi_256(style.r, style.g, style.b)
+            if isinstance(style, types.Rgb)
+            else style.index
+        )
         if mode == types.ColorMode.ANSI_16:
-            v = ansi_conversions.ansi_256_to_ansi_16(style.index)
+            v = ansi_conversions.ansi_256_to_ansi_16(index)
             code = str(v + 10 if is_bg else v)
         else:
-            code = f"{prefix};5;{style.index}"
-
-    elif isinstance(style, types.Rgb):
-        if mode == types.ColorMode.TRUE_COLOR:
-            code = f"{prefix};2;{style.r};{style.g};{style.b}"
-        else:
-            v = ansi_conversions.rgb_to_ansi_256(style.r, style.g, style.b)
-            if mode == types.ColorMode.ANSI_16:
-                v = ansi_conversions.ansi_256_to_ansi_16(v)
-                code = str(v + 10 if is_bg else v)
-            else:
-                code = f"{prefix};5;{v}"
+            code = f"{prefix};5;{index}"
 
     return types.CodePair(
         start=f"{_ESC}{code}m",
