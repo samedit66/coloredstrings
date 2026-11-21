@@ -2,6 +2,8 @@
 The tests below are a direct port of the tests found in https://github.com/bluenote10/yachalk/blob/master/tests/test_chalk.py.
 """
 
+from dataclasses import replace
+
 import pytest
 from helper import r
 
@@ -298,6 +300,9 @@ def test_registered_styles_merge_metadata_and_extension_precedence(
     expected = style.red.bold.underline.visible.link("https://example.com")
 
     assert merged.mode == style.mode
+    assert merged.attrs == expected.attrs
+    # Independent attributes have no promised byte order; compare the same ordering.
+    expected = replace(expected, attrs=merged.attrs)
     assert merged("x") == expected("x")
     assert merged.shared("x") == expected.rgb("lime")("x")
     assert merged.nested("x") == expected.rgb("blue")("x")
