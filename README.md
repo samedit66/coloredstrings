@@ -47,7 +47,7 @@ python -m pip install coloredstrings
 python -m coloredstrings
 ```
 
-The sampler shows what your terminal theme does with `bright_black` and whether it draws a double underline. Requires Python 3.9 or later.
+The sampler shows what your terminal theme does with `bright_black` and whether it draws a double underline. Requires Python 3.11 or later.
 
 ## Working with styles
 
@@ -206,4 +206,4 @@ print(filename("overrides.toml"))
 
 The ANSI codes are assembled when you call the style. The builder opens the foreground, background, and attributes around your text, then closes them in reverse order. With nested colors, it restores the outer color after the inner one closes. Across a line break, it closes and reopens the style so a background stays with its line. [StyleBuilder](https://github.com/samedit66/coloredstrings/blob/dev/src/coloredstrings/style_builder.py) · [ANSI rendering](https://github.com/samedit66/coloredstrings/blob/dev/src/coloredstrings/stylize.py)
 
-Working on a rendering bug? Include the smallest expression that shows it and the color mode you used. `repr(result)` makes a reset code much easier to spot in an issue. To run the suite locally, use `uv sync --frozen` followed by `uv run pytest`. [Report an issue](https://github.com/samedit66/coloredstrings/issues)
+Working on a rendering bug? Include the smallest expression that shows it and the color mode you used. `repr(result)` makes a reset code much easier to spot in an issue. To run the suite locally, use `uv sync --frozen` followed by `make check` (lint, formatting, type checks, and tests). [Report an issue](https://github.com/samedit66/coloredstrings/issues)

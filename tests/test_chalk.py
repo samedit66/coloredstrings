@@ -285,6 +285,24 @@ def test_registered_styles_compose_in_the_callers_mode(style: StyleBuilder) -> N
     assert theme.success.notice("x") == theme.notice("x")
 
 
+def test_registered_styles_merge_metadata_and_extension_precedence(
+    style: StyleBuilder,
+) -> None:
+    extension = (
+        style.color_mode(ColorMode.TRUE_COLOR)
+        .red.bold.visible.link("https://example.com")
+        .extend(shared="coral", nested="blue")
+    )
+    theme = style.green.underline.extend(shared="lime", accent=extension)
+    merged = theme.accent
+    expected = style.red.bold.underline.visible.link("https://example.com")
+
+    assert merged.mode == style.mode
+    assert merged("x") == expected("x")
+    assert merged.shared("x") == expected.rgb("lime")("x")
+    assert merged.nested("x") == expected.rgb("blue")("x")
+
+
 def test_unknown_attribute_uses_python_lookup(style: StyleBuilder) -> None:
     import coloredstrings as cs
 

@@ -2,12 +2,12 @@ import os
 import platform
 import re
 import sys
-import typing
+from typing import TextIO
 
 from coloredstrings import types
 
 
-def detect_color_support(stream: typing.TextIO = sys.stdout) -> types.ColorMode:
+def detect_color_support(stream: TextIO = sys.stdout) -> types.ColorMode:
     """
     Detect the best ColorMode available for the given stream and environment.
 
@@ -166,7 +166,7 @@ def detect_color_support(stream: typing.TextIO = sys.stdout) -> types.ColorMode:
 
 def _get_env_force_color(
     var_name: str = "FORCE_COLOR",
-) -> typing.Optional[types.ColorMode]:
+) -> types.ColorMode | None:
     """
     Interpret FORCE_COLOR/CLICOLOR_FORCE environment variable.
 

@@ -1,12 +1,19 @@
-.PHONY: test
+.PHONY: check lint format-check test typecheck pre-commit-setup
+
+check: lint format-check typecheck test
+
+lint:
+	uv run --frozen ruff check .
+
+format-check:
+	uv run --frozen ruff format --check .
+
 test:
-	uv run pytest -vv
+	uv run --frozen pytest -q
 
-.PHONY: typecheck
 typecheck:
-	uv run mypy
+	uv run --frozen mypy
 
-.PHONY: pre-commit-setup
 pre-commit-setup:
-	uv run pre-commit install
-	uv run pre-commit run --all-files
+	uv run --frozen pre-commit install
+	uv run --frozen pre-commit run --all-files

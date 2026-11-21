@@ -1,6 +1,6 @@
 import copy
 import logging
-from typing import Literal, Optional
+from typing import Literal
 
 from coloredstrings import style_builder
 
@@ -25,8 +25,8 @@ class ColoredFormatter(logging.Formatter):
 
     def __init__(
         self,
-        fmt: Optional[str] = None,
-        datefmt: Optional[str] = None,
+        fmt: str | None = None,
+        datefmt: str | None = None,
         style: Literal["%", "{", "$"] = "%",
         colorize_level: bool = True,
         colorize_msg: bool = False,
