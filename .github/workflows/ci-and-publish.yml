@@ -42,12 +42,14 @@ jobs:
           # create and populate a venv according to pyproject/uv.lock
           uv sync --frozen
 
-      - name: Run lint, format, type and test checks
-        run: |
-          uv run --frozen ruff check .
-          uv run --frozen ruff format --check .
-          uv run --frozen mypy
-          uv run --frozen pytest -q
+      - name: Lint
+        run: uv run --frozen ruff check .
+      - name: Check formatting
+        run: uv run --frozen ruff format --check .
+      - name: Check types
+        run: uv run --frozen mypy
+      - name: Run tests
+        run: uv run --frozen pytest -q
 
   windows-redirect:
     name: Check redirected output on Windows
