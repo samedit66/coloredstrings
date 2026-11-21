@@ -21,7 +21,7 @@ print(failed, "test_missing_key")
 print(cs.dim(f"  expected {cs.yellow('port')} in server.toml"))
 ```
 
-![Python terminal session showing a green PASS, a white-on-red FAIL, and the missing key port highlighted in yellow](https://raw.githubusercontent.com/samedit66/coloredstrings/dev/media/preview.gif)
+![Python terminal session showing a green PASS, a white-on-red FAIL, and the missing key port highlighted in yellow](https://raw.githubusercontent.com/samedit66/coloredstrings/main/media/preview.gif)
 
 ## What you get
 
