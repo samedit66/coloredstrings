@@ -2,7 +2,7 @@ import copy
 import logging
 from typing import Literal
 
-from coloredstrings import style_builder
+from coloredstrings import style_builder, types
 
 _sb = style_builder.StyleBuilder()
 
@@ -30,8 +30,11 @@ class ColoredFormatter(logging.Formatter):
         style: Literal["%", "{", "$"] = "%",
         colorize_level: bool = True,
         colorize_msg: bool = False,
+        *,
+        mode: types.ColorMode | None = None,
     ) -> None:
         super().__init__(fmt=fmt, datefmt=datefmt, style=style)
+        self.mode = mode
         self.colorize_level = colorize_level
         self.colorize_msg = colorize_msg
 
@@ -40,9 +43,9 @@ class ColoredFormatter(logging.Formatter):
         color = _DEFAULT_LEVEL_COLORS.get(record.levelno)
         if color is not None:
             if self.colorize_level:
-                record.levelname = color(record.levelname)
+                record.levelname = color(record.levelname, mode=self.mode)
             if self.colorize_msg:
-                record.msg = color(record.getMessage())
+                record.msg = color(record.getMessage(), mode=self.mode)
                 record.args = ()
 
         return super().format(record)

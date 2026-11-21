@@ -90,6 +90,8 @@ There’s a reason to keep both `cs.red` and `cs.rgb("red")` around. The first u
 
 In 3.4, RGB components and palette indices accept integers from `0` to `255` inclusive. An out-of-range value raises `ValueError` when you build the style, even with colors disabled. Floats and booleans raise `TypeError`. An RGB tuple takes exactly three components.
 
+> **Warning:** Mixing conflicting attributes such as `.underline.double_underline` or `.blink.rapid_blink` has no defined precedence. Their output order may vary between processes. Choose one variant per chain or theme composition.
+
 ### Text attributes
 
 | Effect | Names |
@@ -116,6 +118,8 @@ print(diff.added("+ timeout = 10"))
 ```
 
 Theme entries can be styles, color names, hex strings, or RGB tuples. `extend()` accepts a dictionary as well as keyword arguments. You can still write `diff.bold.added`, and `diff.color_mode(cs.ColorMode.NO_COLOR)` gives you a plain-text version of the whole theme.
+
+> **Warning:** Theme names matching built-in fields or methods (for example `red` or `rgb`) are inaccessible through attribute lookup. Do not mutate `extensions` or an `extensions=` dictionary after creating a builder: derived styles may share it.
 
 ### Terminal links and plain text
 
@@ -146,7 +150,21 @@ log.addHandler(console)
 log.warning("Skipping locked file %s", "index.db")
 ```
 
-A file handler attached to the same logger receives the original record, including its message template and arguments. The formatter uses the color mode detected for standard output when its module is imported.
+A file handler attached to the same logger receives the original record, including its message template and arguments. The formatter uses the color mode detected for standard output when its module is imported unless you pass `mode=`. When stdout is redirected but the handler writes to stderr, choose the mode explicitly:
+
+```python
+import sys
+from coloredstrings.color_support import detect_color_support
+
+console.setFormatter(ColoredFormatter(
+    "%(levelname)s  %(message)s",
+    mode=detect_color_support(sys.stderr),
+))
+```
+
+> **Warning:** A formatter does not infer the destination of its handler. Sharing one formatter between a terminal handler and a file handler also shares its color mode; use separate formatters with explicit modes.
+
+> **Warning:** Nested styling restores the standalone reset codes emitted by coloredstrings. External strings containing combined resets such as `\x1b[0;1m` or `\x1b[39;1m` can interrupt the outer style. This is not a general-purpose ANSI parser.
 
 ### Who decides whether to use color?
 
@@ -166,11 +184,12 @@ If you know the destination, you can choose the mode yourself. This is particula
 import sys
 
 import coloredstrings as cs
-from coloredstrings.color_support import detect_color_support
 
-errors = cs.color_mode(detect_color_support(sys.stderr))
+errors = cs.StyleBuilder.for_stream(sys.stderr)
 print(errors.red("Permission denied"), file=sys.stderr)
 ```
+
+> **Warning:** `for_stream()` detects the mode when the builder is created. Recreate it if the destination changes. Module-level styles still capture stdout's mode at import time; combining them with later redirection or stderr output can select the wrong mode. Color detection on Windows does not enable VT processing; a console with VT disabled may display escape sequences despite detecting truecolor.
 
 Use `color_mode()` for a chain or `mode=` for one call. The available modes are `NO_COLOR`, `ANSI_16`, `EXTENDED_256`, and `TRUE_COLOR` on `cs.ColorMode`. For example, a test can assert `cs.red("failed", mode=cs.ColorMode.NO_COLOR) == "failed"` on any machine.
 

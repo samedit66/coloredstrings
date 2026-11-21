@@ -1,11 +1,11 @@
 name: ci
 
 # Triggers:
-# - push to main / PRs to main => run tests matrix
+# - push to main/dev or PRs to main => run tests matrix
 # - push tags v* => run tests matrix and (if semver) publish after tests pass
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "dev"]
     tags:
       - "v*"
   pull_request:
@@ -19,10 +19,11 @@ concurrency:
 jobs:
   build:
     name: Build & test matrix
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
+        os: [ubuntu-latest, windows-latest]
         python-version: ["3.11", "3.12", "3.13", "3.14", "3.15"]
 
     steps:
@@ -42,7 +43,11 @@ jobs:
           uv sync --frozen
 
       - name: Run lint, format, type and test checks
-        run: make check
+        run: |
+          uv run --frozen ruff check .
+          uv run --frozen ruff format --check .
+          uv run --frozen mypy
+          uv run --frozen pytest -q
 
   windows-redirect:
     name: Check redirected output on Windows

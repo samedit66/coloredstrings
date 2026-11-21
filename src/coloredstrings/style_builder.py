@@ -3,7 +3,7 @@ from __future__ import annotations
 import dataclasses
 import warnings
 from collections.abc import Mapping
-from typing import TypeAlias, overload
+from typing import TextIO, TypeAlias, overload
 
 from coloredstrings import color_support, stylize, types, utils
 
@@ -37,6 +37,11 @@ class StyleBuilder:
 
     url: str | None = None
     """URL address for `link` style."""
+
+    @classmethod
+    def for_stream(cls, stream: TextIO) -> StyleBuilder:
+        """Create styles using the color mode detected for this output stream."""
+        return cls(mode=color_support.detect_color_support(stream))
 
     def __call__(
         self,

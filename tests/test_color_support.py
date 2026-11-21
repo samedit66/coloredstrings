@@ -3,8 +3,16 @@ import sys
 from pathlib import Path
 from unittest import mock
 
+import pytest
+
 from coloredstrings.color_support import _get_env_force_color, detect_color_support
 from coloredstrings.types import ColorMode
+
+
+@pytest.fixture(autouse=True)
+def default_platform(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Unix heuristic tests must not depend on the host running pytest.
+    monkeypatch.setattr("platform.system", lambda: "Darwin")
 
 
 @mock.patch.dict(os.environ, {}, clear=True)
@@ -255,3 +263,35 @@ def test_detect_color_support__color_cli_flag() -> None:
 def test_windows_redirected_output_has_no_color(tmp_path: Path) -> None:
     with (tmp_path / "output.txt").open("w") as stream:
         assert detect_color_support(stream) == ColorMode.NO_COLOR
+
+
+@mock.patch.dict(os.environ, {"COLORTERM": "truecolor"}, clear=True)
+@mock.patch("sys.argv", ["app"])
+def test_detection_uses_current_stdout(monkeypatch: pytest.MonkeyPatch) -> None:
+    import io
+
+    from coloredstrings import StyleBuilder
+
+    class Tty(io.StringIO):
+        def isatty(self) -> bool:
+            return True
+
+    monkeypatch.setattr(sys, "stdout", Tty())
+    assert detect_color_support() == ColorMode.TRUE_COLOR
+    terminal = StyleBuilder.for_stream(sys.stdout)
+    pipe = StyleBuilder.for_stream(io.StringIO())
+    assert terminal.mode == ColorMode.TRUE_COLOR
+    assert pipe.red("x") == "x"
+    monkeypatch.setattr(sys, "stdout", io.StringIO())
+    assert detect_color_support() == ColorMode.NO_COLOR
+    assert terminal.mode == ColorMode.TRUE_COLOR
+
+
+@mock.patch.dict(os.environ, {"CLICOLOR": "1"}, clear=True)
+@mock.patch("sys.argv", ["app"])
+def test_clicolor_handles_unavailable_isatty() -> None:
+    import io
+
+    stream = io.StringIO()
+    stream.close()
+    assert detect_color_support(stream) == ColorMode.NO_COLOR

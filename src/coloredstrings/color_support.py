@@ -7,7 +7,7 @@ from typing import TextIO
 from coloredstrings import types
 
 
-def detect_color_support(stream: TextIO = sys.stdout) -> types.ColorMode:
+def detect_color_support(stream: TextIO | None = None) -> types.ColorMode:
     """
     Detect the best ColorMode available for the given stream and environment.
 
@@ -23,6 +23,9 @@ def detect_color_support(stream: TextIO = sys.stdout) -> types.ColorMode:
      - COLORTERM / TERM_PROGRAM / TERM heuristics
      - fallback -> NO_COLOR
     """
+    if stream is None:
+        stream = sys.stdout
+
     # -1) Check for --no-color and --color
     if "--no-color" in sys.argv:
         return types.ColorMode.NO_COLOR
@@ -46,19 +49,19 @@ def detect_color_support(stream: TextIO = sys.stdout) -> types.ColorMode:
     if cliforce_color is not None:
         return cliforce_color
 
-    clicolor = os.environ.get("CLICOLOR")
-    if clicolor is not None and len(clicolor) != 0:
-        return types.ColorMode.ANSI_16 if stream.isatty() else types.ColorMode.NO_COLOR
-
-    # 3) quick checks
-    if os.environ.get("TERM", "").lower() == "dumb":
-        return types.ColorMode.NO_COLOR
-
     # isatty check (if stream doesn't have isatty, assume not a tty)
     try:
         is_tty = stream.isatty()
     except Exception:
         is_tty = False
+
+    clicolor = os.environ.get("CLICOLOR")
+    if clicolor is not None and len(clicolor) != 0:
+        return types.ColorMode.ANSI_16 if is_tty else types.ColorMode.NO_COLOR
+
+    # 3) quick checks
+    if os.environ.get("TERM", "").lower() == "dumb":
+        return types.ColorMode.NO_COLOR
 
     # 4) Windows heuristics
     if platform.system() == "Windows":

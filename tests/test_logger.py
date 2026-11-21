@@ -25,3 +25,17 @@ def test_color_is_local_to_the_handler(monkeypatch, colored_first):
     assert console.getvalue() == f"{red('ERROR')} {red('error 42')}\n"
     assert log_file.getvalue() == "ERROR error 42\n"
     assert (record.levelname, record.msg, record.args) == ("ERROR", "error %s", ("42",))
+
+
+@pytest.mark.parametrize("mode", [ColorMode.NO_COLOR, ColorMode.ANSI_16])
+def test_formatter_explicit_mode(mode: ColorMode) -> None:
+    record = logging.LogRecord("app", logging.ERROR, "", 0, "error %s", ("42",), None)
+    formatter = ColoredFormatter(
+        "%(levelname)s %(message)s", colorize_msg=True, mode=mode
+    )
+    result = formatter.format(record)
+    assert ("\x1b[" in result) == (mode != ColorMode.NO_COLOR)
+    from coloredstrings import strip_ansi
+
+    assert strip_ansi(result) == "ERROR error 42"
+    assert (record.levelname, record.msg, record.args) == ("ERROR", "error %s", ("42",))
