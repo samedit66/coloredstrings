@@ -1,11 +1,11 @@
 name: ci
 
 # Triggers:
-# - push to main/dev or PRs to main => run tests matrix
+# - push to main or PRs to main => run tests matrix
 # - push tags v* => run tests matrix and (if semver) publish after tests pass
 on:
   push:
-    branches: ["main", "dev"]
+    branches: ["main"]
     tags:
       - "v*"
   pull_request:
