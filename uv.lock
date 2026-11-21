@@ -22,7 +22,7 @@ wheels = [
 
 [[package]]
 name = "coloredstrings"
-version = "3.4.0"
+version = "4.0.0"
 source = { editable = "." }
 
 [package.dev-dependencies]
